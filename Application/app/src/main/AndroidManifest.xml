@@ -16,6 +16,7 @@
             </intent-filter>
         </activity>
         <activity android:name="com.example.iago.application.DisplayCharacters" />
+        <activity android:name="com.example.iago.application.CreateCharacter1" />
     </application>
 
 </manifest>
