@@ -1,5 +1,10 @@
 package com.example.iago.application;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -12,6 +17,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class DBHelper extends SQLiteOpenHelper{
 
+    private Context contex;
+
     public static final String DATABASE_NAME = "TormentaDB.db";
 
     public static final String CHAR_TABLE_NAME = "personagens";
@@ -23,7 +30,7 @@ public class DBHelper extends SQLiteOpenHelper{
     public static final String CHAR_COLUMN_INT = "inteligência";
     public static final String CHAR_COLUMN_SAB = "sabedoria";
     public static final String CHAR_COLUMN_CAR = "carisma";
-    public static final String CHAR_COLUMN_RAÇA = "raçaid";
+    public static final String CHAR_COLUMN_RAÇA = "racaid";
 
     public static final String CLASS_TABLE_NAME = "classes";
     public static final String CLASS_COLUMN_ID = "classid";
@@ -34,13 +41,13 @@ public class DBHelper extends SQLiteOpenHelper{
     public static final String CLASS_COLUMN_PRESTÍGIO = "prestígio";
     public static final String CLASS_COLUMN_NÍVEL = "nívelmax";
     public static final String CLASS_COLUMN_ORIGEM = "classorigem";
-    public static final String CLASS_COLUMN_DESCRIPTION = "classdescrição";
+    public static final String CLASS_COLUMN_DESCRIPTION = "classdescricao";
 
-    public static final String RACE_TABLE_NAME = "raças";
-    public static final String RACE_COLUMN_ID = "raçaid";
-    public static final String RACE_COLUMN_NAME = "raçanome";
-    public static final String RACE_COLUMN_ORIGEM = "raçanome";
-    public static final String RACE_COLUMN_DESCRIPTION = "raçadescrição";
+    public static final String RACE_TABLE_NAME = "racas";
+    public static final String RACE_COLUMN_ID = "racaid";
+    public static final String RACE_COLUMN_NAME = "racanome";
+    public static final String RACE_COLUMN_ORIGEM = "racaorigem";
+    public static final String RACE_COLUMN_DESCRIPTION = "racadescricao";
 
     public static final String CHARCLASSE_REL_NAME = "relaccharclass";
     public static final String CHARCLASSE_CHAR_ID = "relaccharclasschar";
@@ -51,27 +58,32 @@ public class DBHelper extends SQLiteOpenHelper{
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME , null, 1);
+        contex = context;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         // TODO Auto-generated method stub
+
+        FileReader file = null;
+
         db.execSQL(
-                "create table" + CHAR_TABLE_NAME  +
-                        "(id integer primary key, nome text, força integer, destreza integer, constituição integer, inteligência integer, sabedoria integer, carisma integer, raçaid integer, foreign key(raçaid) references raças(raçaid))"
+                "create table " + RACE_TABLE_NAME  +
+                        "(racaid integer primary key, racanome text, racaorigem text, racadescricao text)"
         );
         db.execSQL(
-                "create table" + CLASS_TABLE_NAME  +
-                        "(classid integer primary key, classnome text, classenome text, bbaclasse integer, pvsclasse integer, perclasse integer, prestígio boolean, nívelmax integer, classorigem text)"
+                "create table " + CHAR_TABLE_NAME  +
+                        "(id integer primary key, nome text, força integer, destreza integer, constituicao integer, inteligência integer, sabedoria integer, carisma integer, racaid integer, foreign key(racaid) references racas(racaid))"
         );
         db.execSQL(
-                "create table" + RACE_TABLE_NAME  +
-                        "(raçaid integer primary key, raçanome text, raçaorigem text, raçadescrição text)"
+                "create table " + CLASS_TABLE_NAME  +
+                        "(classid integer primary key, classnome text, bbaclasse integer, pvsclasse integer, perclasse integer, prestígio boolean, nívelmax integer, classorigem text, classdescricao text)"
         );
-        db.execSQL(
-                "create table" + CHARCLASSE_REL_NAME  +
-                        "(" + CHARCLASSE_CHAR_ID + "integer, foreign key(" + CHARCLASSE_CHAR_ID + ") references personagens(id)," + CHARCLASSE_CLASS_ID + "integer, foreign key(" + CHARCLASSE_CLASS_ID + ") references classes(classid), integer" + CHARCLASSE_NÍVEL + ")"
-        );
+        //db.execSQL(
+        //        "create table " + CHARCLASSE_REL_NAME  +
+        //                "(" + CHARCLASSE_CHAR_ID + "integer, foreign key(" + CHARCLASSE_CHAR_ID + ") references personagens(id)," + CHARCLASSE_CLASS_ID + "integer, foreign key(" + CHARCLASSE_CLASS_ID + ") references classes(classid), integer" + CHARCLASSE_NÍVEL + ")"
+        //);
+
     }
 
     @Override
@@ -79,8 +91,44 @@ public class DBHelper extends SQLiteOpenHelper{
         // TODO Auto-generated method stub
         db.execSQL("DROP TABLE IF EXISTS personagens");
         db.execSQL("DROP TABLE IF EXISTS classes");
-        db.execSQL("DROP TABLE IF EXISTS raças");
+        db.execSQL("DROP TABLE IF EXISTS racas");
         onCreate(db);
+    }
+
+    public void inicializaDB(){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from "+RACE_TABLE_NAME);
+        db.execSQL("delete from "+CLASS_TABLE_NAME);
+
+        String line = "";
+
+        try {
+            BufferedReader buffer = new BufferedReader(new InputStreamReader(contex.getAssets().open("classes.csv")));
+
+            while ((line = buffer.readLine()) != null) {
+                String[] str = line.split(";");
+                this.insertClasse(str[0],Integer.parseInt(str[1]),Integer.parseInt(str[2]),Integer.parseInt(str[3]),Boolean.parseBoolean(str[4]),Integer.parseInt(str[5]),str[6],str[7]);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        try {
+            BufferedReader buffer = new BufferedReader(new InputStreamReader(contex.getAssets().open("racas.csv")));
+            while ((line = buffer.readLine()) != null) {
+                String[] str = line.split(";");
+                this.insertRaça(str[0],"",str[1]);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public boolean insertPersonagem (String name, int força, int destreza, int constituição, int inteligência, int sabedoria, int carisma, int raçaid){
@@ -109,16 +157,18 @@ public class DBHelper extends SQLiteOpenHelper{
         contentValues.put(CLASS_COLUMN_NÍVEL,nivelmax);
         contentValues.put(CLASS_COLUMN_ORIGEM,origem);
         contentValues.put(CLASS_COLUMN_DESCRIPTION,descrição);
+        System.out.println(contentValues);
         db.insert(CLASS_TABLE_NAME, null, contentValues);
         return true;
     }
 
-    public boolean insertRaça(String name, String origem, String descrição){
+    public boolean insertRaça(String name, String origem, String descricao){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(RACE_COLUMN_NAME, name);
         contentValues.put(RACE_COLUMN_ORIGEM,origem);
-        contentValues.put(RACE_COLUMN_DESCRIPTION,descrição);
+        contentValues.put(RACE_COLUMN_DESCRIPTION,descricao);
+        System.out.println(contentValues);
         db.insert(RACE_TABLE_NAME, null, contentValues);
         return true;
     }
@@ -129,8 +179,8 @@ public class DBHelper extends SQLiteOpenHelper{
             res =  db.rawQuery( "select * from personagens where id="+id+"", null );
         else if  (table == "classe")
             res =  db.rawQuery( "select * from classes where id="+id+"", null );
-        else if  (table == "raça")
-            res =  db.rawQuery( "select * from raças where id="+id+"", null );
+        else if  (table == "raca")
+            res =  db.rawQuery( "select * from racas where id="+id+"", null );
         return res;
     }
 
@@ -154,8 +204,8 @@ public class DBHelper extends SQLiteOpenHelper{
         if (table == "classe") {
             res = db.rawQuery("select * from classes where id=" + id + "", null);
             desc = res.getString(res.getColumnIndex(DBHelper.CLASS_COLUMN_DESCRIPTION));
-        } else if (table == "raça") {
-            res = db.rawQuery("select * from raças where id=" + id + "", null);
+        } else if (table == "raca") {
+            res = db.rawQuery("select * from racas where id=" + id + "", null);
             desc = res.getString(res.getColumnIndex(DBHelper.RACE_COLUMN_DESCRIPTION));
         }
         else
@@ -191,7 +241,7 @@ public class DBHelper extends SQLiteOpenHelper{
             numRows = (int) DatabaseUtils.queryNumEntries(db, CHAR_TABLE_NAME);
         else if  (table == "classe")
             numRows = (int) DatabaseUtils.queryNumEntries(db, CLASS_TABLE_NAME);
-        else if  (table == "raça")
+        else if  (table == "raca")
             numRows = (int) DatabaseUtils.queryNumEntries(db, RACE_TABLE_NAME);
         return numRows;
     }
@@ -231,8 +281,8 @@ public class DBHelper extends SQLiteOpenHelper{
             res = db.rawQuery("select * from classes", null);
             column = CLASS_COLUMN_NAME;
         }
-        else if  (table == "raças") {
-            res = db.rawQuery("select * from raças", null);
+        else if  (table == "racas") {
+            res = db.rawQuery("select * from racas", null);
             column = RACE_COLUMN_NAME;
         }
         if (res != null) {
