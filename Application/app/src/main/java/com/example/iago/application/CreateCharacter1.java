@@ -10,7 +10,7 @@ import android.widget.Spinner;
  */
 public class CreateCharacter1 extends Activity {
 
-    private com.example.iago.myapplication2.DBHelper mydb;
+    private com.example.iago.application.DBHelper mydb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
