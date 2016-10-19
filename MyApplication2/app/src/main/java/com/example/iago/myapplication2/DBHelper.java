@@ -12,7 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class DBHelper extends SQLiteOpenHelper{
 
-    public static final String DATABASE_NAME = "pokemonDB.db";
+    public static final String DATABASE_NAME = "TormentaDB.db";
 
     public static final String CHAR_TABLE_NAME = "personagens";
     public static final String CHAR_COLUMN_ID = "id";
@@ -41,6 +41,12 @@ public class DBHelper extends SQLiteOpenHelper{
     public static final String RACE_COLUMN_NAME = "raçanome";
     public static final String RACE_COLUMN_ORIGEM = "raçanome";
     public static final String RACE_COLUMN_DESCRIPTION = "raçadescrição";
+
+    public static final String CHARCLASSE_REL_NAME = "relaccharclass";
+    public static final String CHARCLASSE_CHAR_ID = "relaccharclasschar";
+    public static final String CHARCLASSE_CLASS_ID = "relaccharclassclass";
+    public static final String CHARCLASSE_NÍVEL = "relaccharclassnvl";
+
     private HashMap hp;
 
     public DBHelper(Context context) {
@@ -51,16 +57,20 @@ public class DBHelper extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase db) {
         // TODO Auto-generated method stub
         db.execSQL(
-                "create table personagens " +
-                        "(id integer primary key, nome text, força integer, destreza integer, constituição integer, inteligência integer, sabedoria integer, carisma integer)"
+                "create table" + CHAR_TABLE_NAME  +
+                        "(id integer primary key, nome text, força integer, destreza integer, constituição integer, inteligência integer, sabedoria integer, carisma integer, raçaid integer, foreign key(raçaid) references raças(raçaid))"
         );
         db.execSQL(
-                "create table classes " +
+                "create table" + CLASS_TABLE_NAME  +
                         "(classid integer primary key, classnome text, classenome text, bbaclasse integer, pvsclasse integer, perclasse integer, prestígio boolean, nívelmax integer, classorigem text)"
         );
         db.execSQL(
-                "create table raças " +
+                "create table" + RACE_TABLE_NAME  +
                         "(raçaid integer primary key, raçanome text, raçaorigem text, raçadescrição text)"
+        );
+        db.execSQL(
+                "create table" + CHARCLASSE_REL_NAME  +
+                        "(" + CHARCLASSE_CHAR_ID + "integer, foreign key(" + CHARCLASSE_CHAR_ID + ") references personagens(id)," + CHARCLASSE_CLASS_ID + "integer, foreign key(" + CHARCLASSE_CLASS_ID + ") references classes(classid), integer" + CHARCLASSE_NÍVEL + ")"
         );
     }
 
@@ -124,6 +134,19 @@ public class DBHelper extends SQLiteOpenHelper{
         return res;
     }
 
+ //   public int getClassLevel(int charid, int classid) {
+ //SQLiteDatabase db = this.getReadableDatabase();
+ //       long res = DatabaseUtils.queryNumEntries(db, CHARCLASSE_REL_NAME, CHARCLASSE_CHAR_ID + "=? AND" + CHARCLASSE_CLASS_ID + "=?", new String[] {Integer.toString(charid),Integer.toString(classid)});
+ //       if (res > 0)
+  //
+  //  }
+
+ //   public boolean LevelUp (int charid, int classid) {
+  //      SQLiteDatabase db = this.getWritableDatabase();
+  //      ContentValues contentValues = new ContentValues();
+  //      contentValues.put(CHARCLASSE_CHAR_ID, charid);
+  //      contentValues.put(CHARCLASSE_CLASS_ID,classid);
+  //  }
     public String getDescr(String table, int id) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = null;
