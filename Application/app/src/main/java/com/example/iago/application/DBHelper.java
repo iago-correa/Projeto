@@ -187,20 +187,26 @@ public class DBHelper extends SQLiteOpenHelper{
      public int getClassLevel(int charid, int classid) {
          SQLiteDatabase db = this.getReadableDatabase();
          int level = 0;
-         Cursor clas = db.rawQuery("select * from classes where id="+classid+"", null), res = null;
-         clas.getString(clas.getColumnIndex(CLASS_COLUMN_NAME));
-         res = db.rawQuery("select * from " + CHARCLASSE_REL_NAME + " where " + CHARCLASSE_CLASS_ID + "=" +classid+ " and " + CHARCLASSE_CHAR_ID + "=" +charid+ "", null);
+         Cursor res = db.rawQuery("select * from " + CHARCLASSE_REL_NAME + " where " + CHARCLASSE_CLASS_ID + "=" +classid+ " and " + CHARCLASSE_CHAR_ID + "=" +charid+ "", null);
          if (res != null)
              level = res.getInt(res.getColumnIndex(CHARCLASSE_NÍVEL));
          return level;
       }
 
- //      public boolean LevelUp (int charid, int classid) {
-  //        SQLiteDatabase db = this.getWritableDatabase();
-   //       ContentValues contentValues = new ContentValues();
-    //      contentValues.put(CHARCLASSE_CHAR_ID, charid);
-    //      contentValues.put(CHARCLASSE_CLASS_ID,classid);
-     // }
+       public boolean LevelUp (int charid, int classid) {
+           SQLiteDatabase db = this.getReadableDatabase();
+           int level = getClassLevel(charid, classid) + 1;
+           ContentValues contentValues = new ContentValues();
+           contentValues.put(CHARCLASSE_CLASS_ID, classid);
+           contentValues.put(CHARCLASSE_CHAR_ID, charid);
+           contentValues.put(CHARCLASSE_NÍVEL, level);
+           Cursor res = null;
+           if (level > 1)
+               db.update(CHARCLASSE_REL_NAME, contentValues, CHARCLASSE_CLASS_ID + " = ? and " + CHARCLASSE_CHAR_ID + " = ?", new String[] { Integer.toString(charid), Integer.toString(classid)} );
+           else
+               db.insert(CHARCLASSE_REL_NAME, null, contentValues);
+           return true;
+       }
     public String getDescr(String table, int id) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = null;
