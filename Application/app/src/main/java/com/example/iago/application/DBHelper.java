@@ -81,7 +81,7 @@ public class DBHelper extends SQLiteOpenHelper{
         );
         db.execSQL(
                 "create table " + CHARCLASSE_REL_NAME  +
-                        "(" + CHARCLASSE_CHAR_ID + " integer, foreign key(" + CHARCLASSE_CHAR_ID + ") references personagens(id), " + CHARCLASSE_CLASS_ID + " integer, foreign key(" + CHARCLASSE_CLASS_ID + ") references classes(classid), integer " + CHARCLASSE_NÍVEL + ")"
+                        "(relaccharclasschar integer, relaccharclassclass integer, " + CHARCLASSE_NÍVEL + " integer, foreign key(relaccharclasschar) references personagens(id), foreign key(relaccharclassclass) references classes(classid))"
         );
 
     }
