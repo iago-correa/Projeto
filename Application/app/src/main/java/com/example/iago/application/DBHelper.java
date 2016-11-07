@@ -79,10 +79,10 @@ public class DBHelper extends SQLiteOpenHelper{
                 "create table " + CLASS_TABLE_NAME  +
                         "(classid integer primary key, classnome text, bbaclasse integer, pvsclasse integer, perclasse integer, prestígio boolean, nívelmax integer, classorigem text, classdescricao text)"
         );
-        //db.execSQL(
-        //        "create table " + CHARCLASSE_REL_NAME  +
-        //                "(" + CHARCLASSE_CHAR_ID + "integer, foreign key(" + CHARCLASSE_CHAR_ID + ") references personagens(id)," + CHARCLASSE_CLASS_ID + "integer, foreign key(" + CHARCLASSE_CLASS_ID + ") references classes(classid), integer" + CHARCLASSE_NÍVEL + ")"
-        //);
+        db.execSQL(
+                "create table " + CHARCLASSE_REL_NAME  +
+                        "(" + CHARCLASSE_CHAR_ID + " integer, foreign key(" + CHARCLASSE_CHAR_ID + ") references personagens(id), " + CHARCLASSE_CLASS_ID + " integer, foreign key(" + CHARCLASSE_CLASS_ID + ") references classes(classid), integer " + CHARCLASSE_NÍVEL + ")"
+        );
 
     }
 
@@ -184,19 +184,23 @@ public class DBHelper extends SQLiteOpenHelper{
         return res;
     }
 
-    //   public int getClassLevel(int charid, int classid) {
-    //SQLiteDatabase db = this.getReadableDatabase();
-    //       long res = DatabaseUtils.queryNumEntries(db, CHARCLASSE_REL_NAME, CHARCLASSE_CHAR_ID + "=? AND" + CHARCLASSE_CLASS_ID + "=?", new String[] {Integer.toString(charid),Integer.toString(classid)});
-    //       if (res > 0)
-    //
-    //  }
+     public int getClassLevel(int charid, int classid) {
+         SQLiteDatabase db = this.getReadableDatabase();
+         int level = 0;
+         Cursor clas = db.rawQuery("select * from classes where id="+classid+"", null), res = null;
+         clas.getString(clas.getColumnIndex(CLASS_COLUMN_NAME));
+         res = db.rawQuery("select * from " + CHARCLASSE_REL_NAME + " where " + CHARCLASSE_CLASS_ID + "=" +classid+ " and " + CHARCLASSE_CHAR_ID + "=" +charid+ "", null);
+         if (res != null)
+             level = res.getInt(res.getColumnIndex(CHARCLASSE_NÍVEL));
+         return level;
+      }
 
-    //   public boolean LevelUp (int charid, int classid) {
-    //      SQLiteDatabase db = this.getWritableDatabase();
-    //      ContentValues contentValues = new ContentValues();
+ //      public boolean LevelUp (int charid, int classid) {
+  //        SQLiteDatabase db = this.getWritableDatabase();
+   //       ContentValues contentValues = new ContentValues();
     //      contentValues.put(CHARCLASSE_CHAR_ID, charid);
     //      contentValues.put(CHARCLASSE_CLASS_ID,classid);
-    //  }
+     // }
     public String getDescr(String table, int id) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = null;
