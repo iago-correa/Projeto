@@ -49,10 +49,28 @@ public class DBHelper extends SQLiteOpenHelper{
     public static final String RACE_COLUMN_ORIGEM = "racaorigem";
     public static final String RACE_COLUMN_DESCRIPTION = "racadescricao";
 
+    public static final String FEAT_TABLE_NAME = "talentos";
+    public static final String FEAT_COLUMN_ID = "talentoid";
+    public static final String FEAT_COLUMN_NAME = "talentonome";
+    public static final String FEAT_COLUMN_REPEAT = "talentorep";
+    public static final String FEAT_COLUMN_ACT = "talentoact";
+
+    public static final String PREREQ_TABLE_NAME = "prerequisitos";
+    public static final String PREREQ_COLUMN_FID = "prereqtalid";
+    public static final String PREREQ_COLUMN_TYPE = "prereqtype";
+    public static final String PREREQ_COLUMN_EXTRA = "prereqesp";
+    public static final String PREREQ_COLUMN_VALUE = "prereqval";
+
     public static final String CHARCLASSE_REL_NAME = "relaccharclass";
     public static final String CHARCLASSE_CHAR_ID = "relaccharclasschar";
     public static final String CHARCLASSE_CLASS_ID = "relaccharclassclass";
     public static final String CHARCLASSE_NÍVEL = "relaccharclassnvl";
+
+    public static final String CHARFEAT_REL_NAME = "relaccharfeat";
+    public static final String CHARFEAT_CHAR_ID = "relaccharfeatchar";
+    public static final String CHARFEAT_FEAT_ID = "relaccharfeatfeat";
+    public static final String CHARFEAT_TIMES = "relaccharfeatnum";
+    public static final String CHARFEAT_AUX = "relaccharfeataux";
 
     private HashMap hp;
 
@@ -83,7 +101,17 @@ public class DBHelper extends SQLiteOpenHelper{
                 "create table " + CHARCLASSE_REL_NAME  +
                         "(relaccharclasschar integer, relaccharclassclass integer, " + CHARCLASSE_NÍVEL + " integer, foreign key(relaccharclasschar) references personagens(id), foreign key(relaccharclassclass) references classes(classid))"
         );
-
+        db.execSQL(
+                "create table " + FEAT_TABLE_NAME +
+                        "(talentoid integer primary key, talentonome text, talentorep boolean, talentoact boolean)"
+        );
+        db.execSQL(
+                "create table " + CHARFEAT_REL_NAME  +
+                        "(relaccharfeatchar integer, relaccharfeatfeat integer, " + CHARFEAT_TIMES + " integer, " + CHARFEAT_AUX + " integer, foreign key(relaccharclasschar) references personagens(id), foreign key(relaccharclassclass) references classes(classid))"
+        );
+        db.execSQL(
+                "create table " + PREREQ_TABLE_NAME +
+                        "(prereqtalid integer, prereqtype text, prereqesp text, prereqval integer, foreign key(prereqtalid) references talentos(talentoid))");
     }
 
     @Override
@@ -92,6 +120,8 @@ public class DBHelper extends SQLiteOpenHelper{
         db.execSQL("DROP TABLE IF EXISTS personagens");
         db.execSQL("DROP TABLE IF EXISTS classes");
         db.execSQL("DROP TABLE IF EXISTS racas");
+        db.execSQL("DROP TABLE IF EXISTS talentos");
+
         onCreate(db);
     }
 
@@ -193,7 +223,7 @@ public class DBHelper extends SQLiteOpenHelper{
          return level;
       }
 
-       public boolean LevelUp (int charid, int classid) {
+    public boolean levelUp (int charid, int classid) {
            SQLiteDatabase db = this.getReadableDatabase();
            int level = getClassLevel(charid, classid) + 1;
            ContentValues contentValues = new ContentValues();
@@ -202,11 +232,88 @@ public class DBHelper extends SQLiteOpenHelper{
            contentValues.put(CHARCLASSE_NÍVEL, level);
            Cursor res = null;
            if (level > 1)
-               db.update(CHARCLASSE_REL_NAME, contentValues, CHARCLASSE_CLASS_ID + " = ? and " + CHARCLASSE_CHAR_ID + " = ?", new String[] { Integer.toString(charid), Integer.toString(classid)} );
+               db.update(CHARCLASSE_REL_NAME, contentValues, CHARCLASSE_CLASS_ID + " = ? and " + CHARCLASSE_CHAR_ID + " = ?", new String[] { Integer.toString(classid), Integer.toString(charid)} );
            else
                db.insert(CHARCLASSE_REL_NAME, null, contentValues);
            return true;
        }
+
+    public boolean featPrereq(int charid, int featid) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String type, esp;
+        int[] value = new int[6];
+        Cursor res = db.rawQuery("select * from " + CHAR_TABLE_NAME + "where" + CHAR_COLUMN_ID + "=" +charid+ "", null);
+        value[0] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_FOR));
+        value[1] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_DES));
+        value[2] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_CON));
+        value[3] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_INT));
+        value[4] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_SAB));
+        value[5] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_CAR));
+        boolean answer = true;
+        res = db.rawQuery("select * from " + PREREQ_TABLE_NAME + " where " + PREREQ_COLUMN_FID + "=" +featid+ "", null);
+        if (res != null) {
+            res.moveToFirst();
+            while (res.isAfterLast() == false) {
+                type = res.getString(res.getColumnIndex(PREREQ_COLUMN_TYPE));
+                if (type == "Atributo") {
+                    esp = res.getString(res.getColumnIndex(PREREQ_COLUMN_EXTRA));
+                    if (esp == "FOR")
+                        if (value[0] < res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE)))
+                            answer = false;
+                        else;
+                    else if (esp == "DES")
+                        if (value[1] < res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE)))
+                            answer = false;
+                        else;
+                    else if (esp == "CON")
+                        if (value[2] < res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE)))
+                            answer = false;
+                        else;
+                    else if (esp == "INT")
+                        if (value[3] < res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE)))
+                            answer = false;
+                        else;
+                    else if (esp == "SAB")
+                        if (value[4] < res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE)))
+                            answer = false;
+                        else;
+                    else if (esp == "CAR")
+                        if (value[5] < res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE)))
+                            answer = false;
+                        else;
+                } else if (type == "Talento") {
+                    if (hasFeat(charid, res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE))) == null)
+                        answer = false;
+                }
+                res.moveToNext();
+            }
+        }
+        return answer;
+    }
+
+    public boolean featBuy (int charid, int featid, int aux) {
+            SQLiteDatabase db = this.getReadableDatabase();
+            Cursor res = hasFeat(charid,featid);
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(CHARFEAT_CHAR_ID, charid);
+            contentValues.put(CHARFEAT_FEAT_ID, charid);
+            contentValues.put(CHARFEAT_AUX, aux);
+            if (res != null) {
+                contentValues.put(CHARFEAT_TIMES, res.getInt(res.getColumnIndex(DBHelper.CHARFEAT_TIMES))+1);
+                db.update(CHARFEAT_REL_NAME, contentValues, CHARFEAT_FEAT_ID + " = ? and " + CHARFEAT_CHAR_ID + " = ?", new String[]{Integer.toString(featid), Integer.toString(charid)});
+            } else {
+                contentValues.put(CHARFEAT_TIMES, 1);
+                db.insert(CHARFEAT_REL_NAME, null, contentValues);
+            }
+            return true;
+    }
+
+    public Cursor hasFeat (int charid, int featid) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery("select * from " + CHARFEAT_REL_NAME + " where " + CHARFEAT_CHAR_ID + "=" +charid+ " and " + CHARFEAT_FEAT_ID + "=" +featid+ "", null);
+        return res;
+    }
+
     public String getDescr(String table, int id) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = null;
@@ -223,9 +330,9 @@ public class DBHelper extends SQLiteOpenHelper{
         return desc;
     }
 
-    public int mod (String atributo, int id) {
+    public int mod (int charid, String atributo) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "select * from personagens where id="+id+"", null );
+        Cursor res =  db.rawQuery( "select * from personagens where id="+charid+"", null );
         Integer value;
         if (atributo == "For")
             value = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_FOR));
