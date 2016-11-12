@@ -55,6 +55,13 @@ public class DBHelper extends SQLiteOpenHelper{
     public static final String FEAT_COLUMN_REPEAT = "talentorep";
     public static final String FEAT_COLUMN_ACT = "talentoact";
 
+    public static final String SKILL_TABLE_NAME = "pericias";
+    public static final String SKILL_COLUMN_ID = "periciaid";
+    public static final String SKILL_COLUMN_NAME = "pericianome";
+    public static final String SKILL_COLUMN_TRAIN = "periciatr";
+    public static final String SKILL_COLUMN_ARMOR = "periciapen";
+    public static final String SKILL_COLUMN_ATT = "periciatt";
+
     public static final String PREREQ_TABLE_NAME = "prerequisitos";
     public static final String PREREQ_COLUMN_FID = "prereqtalid";
     public static final String PREREQ_COLUMN_TYPE = "prereqtype";
@@ -65,6 +72,10 @@ public class DBHelper extends SQLiteOpenHelper{
     public static final String CHARCLASSE_CHAR_ID = "relaccharclasschar";
     public static final String CHARCLASSE_CLASS_ID = "relaccharclassclass";
     public static final String CHARCLASSE_NÍVEL = "relaccharclassnvl";
+
+    public static final String CHARSKILL_REL_NAME = "relaccharskill";
+    public static final String CHARSKILL_CHAR_ID = "relaccharskillchar";
+    public static final String CHARSKILL_SKILL_ID = "relaccharskillskill";
 
     public static final String CHARFEAT_REL_NAME = "relaccharfeat";
     public static final String CHARFEAT_CHAR_ID = "relaccharfeatchar";
@@ -104,6 +115,10 @@ public class DBHelper extends SQLiteOpenHelper{
         db.execSQL(
                 "create table " + FEAT_TABLE_NAME +
                         "(talentoid integer primary key, talentonome text, talentorep boolean, talentoact boolean)"
+        );
+        db.execSQL(
+                "create table " + SKILL_TABLE_NAME +
+                        "(periciaid integer primary key, pericianome text, periciatr boolean, periciapen boolean, periciatt integer)"
         );
         db.execSQL(
                 "create table " + CHARFEAT_REL_NAME  +
@@ -192,6 +207,15 @@ public class DBHelper extends SQLiteOpenHelper{
         return true;
     }
 
+     public int getClassLevel(int charid, int classid) {
+         SQLiteDatabase db = this.getReadableDatabase();
+         int level = 0;
+         Cursor res = db.rawQuery("select * from " + CHARCLASSE_REL_NAME + " where " + CHARCLASSE_CLASS_ID + "=" +classid+ " and " + CHARCLASSE_CHAR_ID + "=" +charid+ "", null);
+         if (res != null)
+             level = res.getInt(res.getColumnIndex(CHARCLASSE_NÍVEL));
+         return level;
+      }
+
     public boolean insertRaça(String name, String origem, String descricao){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -202,6 +226,7 @@ public class DBHelper extends SQLiteOpenHelper{
         db.insert(RACE_TABLE_NAME, null, contentValues);
         return true;
     }
+
     public Cursor getData(String table, int id){
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = null;
@@ -213,15 +238,6 @@ public class DBHelper extends SQLiteOpenHelper{
             res =  db.rawQuery( "select * from racas where id="+id+"", null );
         return res;
     }
-
-     public int getClassLevel(int charid, int classid) {
-         SQLiteDatabase db = this.getReadableDatabase();
-         int level = 0;
-         Cursor res = db.rawQuery("select * from " + CHARCLASSE_REL_NAME + " where " + CHARCLASSE_CLASS_ID + "=" +classid+ " and " + CHARCLASSE_CHAR_ID + "=" +charid+ "", null);
-         if (res != null)
-             level = res.getInt(res.getColumnIndex(CHARCLASSE_NÍVEL));
-         return level;
-      }
 
     public boolean levelUp (int charid, int classid) {
            SQLiteDatabase db = this.getReadableDatabase();
@@ -314,7 +330,7 @@ public class DBHelper extends SQLiteOpenHelper{
         return res;
     }
 
-    public String getDescr(String table, int id) {
+    public String getDescr(int id, String table) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = null;
         String desc;
@@ -360,9 +376,43 @@ public class DBHelper extends SQLiteOpenHelper{
             numRows = (int) DatabaseUtils.queryNumEntries(db, CLASS_TABLE_NAME);
         else if  (table == "raca")
             numRows = (int) DatabaseUtils.queryNumEntries(db, RACE_TABLE_NAME);
+        else if  (table == "talento")
+            numRows = (int) DatabaseUtils.queryNumEntries(db, FEAT_TABLE_NAME);
+        else if  (table == "pericia")
+            numRows = (int) DatabaseUtils.queryNumEntries(db, SKILL_TABLE_NAME);
         return numRows;
     }
 
+    public boolean raceUpdate (int charid) {
+        Cursor res = getData("personagem",charid);
+        int racaid = res.getInt(res.getColumnIndex(CHAR_COLUMN_RAÇA));
+        if (racaid == 1) {
+            attChange(charid, "CON", 4);
+            attChange(charid, "SAB", 2);
+            attChange(charid, "DES", -2);
+        } else if (racaid == 2) {
+            attChange(charid, "DES", 4);
+            attChange(charid, "INT", 2);
+            attChange(charid, "CON", -2);
+        } else if (racaid == 3) {
+            attChange(charid, "DES", 4);
+            attChange(charid, "CON", 2);
+            attChange(charid, "CHA", -2);
+        } else if (racaid == 4) {
+            attChange(charid, "DES", 4);
+            attChange(charid, "CHA", 2);
+            attChange(charid, "FOR", -2);
+        } else if (racaid == 7) {
+            attChange(charid, "FOR", 4);
+            attChange(charid, "CON", 2);
+            attChange(charid, "CHA", -2);
+        } else if (racaid == 8) {
+            attChange(charid, "CHA", 4);
+            attChange(charid, "INT", 2);
+            attChange(charid, "SAB", -2);
+        }
+        return true;
+    }
 
     public boolean updatePersonagem (Integer id, String name, int força, int destreza, int constituição, int inteligência, int sabedoria, int carisma){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -375,6 +425,26 @@ public class DBHelper extends SQLiteOpenHelper{
         contentValues.put(CHAR_COLUMN_SAB, sabedoria);
         contentValues.put(CHAR_COLUMN_CAR, carisma);
         db.update(CHAR_TABLE_NAME, contentValues, "id = ? ", new String[] { Integer.toString(id) } );
+        return true;
+    }
+
+    public boolean attChange (int charid, String att, int val) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        Cursor res = getData("Personagem",charid);
+        if (att == "FOR")
+            contentValues.put(CHAR_COLUMN_FOR,res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_FOR))+val);
+        else if (att == "DES")
+            contentValues.put(CHAR_COLUMN_FOR,res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_DES))+val);
+        else if (att == "CON")
+            contentValues.put(CHAR_COLUMN_FOR,res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_CON))+val);
+        else if (att == "INT")
+            contentValues.put(CHAR_COLUMN_FOR,res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_INT))+val);
+        else if (att == "SAB")
+            contentValues.put(CHAR_COLUMN_FOR,res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_SAB))+val);
+        else if (att == "CAR")
+            contentValues.put(CHAR_COLUMN_FOR,res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_CAR))+val);
+        db.update(CHAR_TABLE_NAME, contentValues, "id = ? ", new String[] { Integer.toString(charid) } );
         return true;
     }
 
@@ -401,6 +471,14 @@ public class DBHelper extends SQLiteOpenHelper{
         else if  (table == "racas") {
             res = db.rawQuery("select * from racas", null);
             column = RACE_COLUMN_NAME;
+        }
+        else if  (table == "pericias") {
+            res = db.rawQuery("select * from pericias", null);
+            column = SKILL_COLUMN_NAME;
+        }
+        else if  (table == "talentos") {
+            res = db.rawQuery("select * from talentos", null);
+            column = FEAT_COLUMN_NAME;
         }
         if (res != null) {
             res.moveToFirst();
