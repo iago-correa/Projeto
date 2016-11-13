@@ -31,6 +31,7 @@ public class DBHelper extends SQLiteOpenHelper{
     public static final String CHAR_COLUMN_SAB = "sabedoria";
     public static final String CHAR_COLUMN_CAR = "carisma";
     public static final String CHAR_COLUMN_RAÇA = "racaid";
+    public static final String CHAR_COLUMN_FCLASS = "primclasse";
 
     public static final String CLASS_TABLE_NAME = "classes";
     public static final String CLASS_COLUMN_ID = "classid";
@@ -83,6 +84,7 @@ public class DBHelper extends SQLiteOpenHelper{
     public static final String CHARFEAT_TIMES = "relaccharfeatnum";
     public static final String CHARFEAT_AUX = "relaccharfeataux";
 
+
     private HashMap hp;
 
     public DBHelper(Context context) {
@@ -102,7 +104,7 @@ public class DBHelper extends SQLiteOpenHelper{
         );
         db.execSQL(
                 "create table " + CHAR_TABLE_NAME  +
-                        "(id integer primary key, nome text, força integer, destreza integer, constituicao integer, inteligência integer, sabedoria integer, carisma integer, racaid integer, foreign key(racaid) references racas(racaid))"
+                        "(id integer primary key, nome text, força integer, destreza integer, constituicao integer, inteligência integer, sabedoria integer, carisma integer, racaid integer, primclasse integer, foreign key(racaid) references racas(racaid), foreign key(primclasse) references classes(classid))"
         );
         db.execSQL(
                 "create table " + CLASS_TABLE_NAME  +
@@ -350,21 +352,56 @@ public class DBHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res =  db.rawQuery( "select * from personagens where id="+charid+"", null );
         Integer value;
-        if (atributo == "For")
+        if (atributo == "FOR")
             value = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_FOR));
-        else if (atributo == "Des")
+        else if (atributo == "DES")
             value = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_DES));
-        else if (atributo == "Con")
+        else if (atributo == "CON")
             value = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_CON));
-        else if (atributo == "Int")
+        else if (atributo == "INT")
             value = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_INT));
-        else if (atributo == "Sab")
+        else if (atributo == "SAB")
             value = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_SAB));
-        else if (atributo == "Car")
+        else if (atributo == "CAR")
             value = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_CAR));
         else
             value = 0;
         return (int)(value - 10)/2;
+    }
+
+    public int CA (int charid) {
+        int CA = 10;
+        CA += mod(charid, "DES");
+        return CA;
+    }
+
+    public int BBA (int charid) {
+        int BBA = 0;
+        int nível;
+        Cursor res;
+        for (int i = 1; i < numberOfRows("classe"); i++) {
+            nível = getClassLevel(charid,i);
+            if (nível > 0) {
+                res = getData("classe", i);
+                BBA += res.getInt(res.getColumnIndex("bbaclasse"));
+            }
+        }
+        return BBA;
+    }
+
+    public int PVs (int charid) {
+        int PVs = 0;
+        int nível;
+        Cursor res = getData("personagem",charid);
+        PVs += (res.getInt(res.getColumnIndex("nível"))*res.getInt(res.getColumnIndex("constituição")));
+        for (int i = 1; i < numberOfRows("classe"); i++) {
+            nível = getClassLevel(charid,i);
+            if (nível > 0) {
+                res = getData("classe", i);
+                PVs += res.getInt(res.getColumnIndex("pvsclasse"));
+            }
+        }
+        return PVs;
     }
 
     public int numberOfRows(String table){
