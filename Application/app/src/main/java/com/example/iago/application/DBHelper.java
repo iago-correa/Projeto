@@ -114,7 +114,7 @@ public class DBHelper extends SQLiteOpenHelper{
                 "create table " + CHARCLASSE_REL_NAME  +
                         "(relaccharclasschar integer, relaccharclassclass integer, " + CHARCLASSE_NÍVEL + " integer, foreign key(relaccharclasschar) references personagens(id), foreign key(relaccharclassclass) references classes(classid))"
         );
-        db.execSQL(
+       db.execSQL(
                 "create table " + FEAT_TABLE_NAME +
                         "(talentoid integer primary key, talentonome text, talentorep boolean, talentoact boolean)"
         );
@@ -124,7 +124,7 @@ public class DBHelper extends SQLiteOpenHelper{
         );
         db.execSQL(
                 "create table " + CHARFEAT_REL_NAME  +
-                        "(relaccharfeatchar integer, relaccharfeatfeat integer, " + CHARFEAT_TIMES + " integer, " + CHARFEAT_AUX + " integer, foreign key(relaccharclasschar) references personagens(id), foreign key(relaccharclassclass) references classes(classid))"
+                        "(relaccharfeatchar integer, relaccharfeatfeat integer, " + CHARFEAT_TIMES + " integer, " + CHARFEAT_AUX + " integer, foreign key(relaccharfeatchar) references personagens(id), foreign key(relaccharfeatfeat) references talentos(talentoid))"
         );
         db.execSQL(
                 "create table " + PREREQ_TABLE_NAME +
