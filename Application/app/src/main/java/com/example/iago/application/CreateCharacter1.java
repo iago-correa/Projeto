@@ -1,10 +1,13 @@
 package com.example.iago.application;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Spinner;
-
 import java.util.ArrayList;
 
 /**
@@ -13,6 +16,7 @@ import java.util.ArrayList;
 public class CreateCharacter1 extends Activity {
 
     private DBHelper mydb;
+    private Button obj;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +42,15 @@ public class CreateCharacter1 extends Activity {
 
         spinner.setAdapter(arrayAdapter2);
         spinner2.setAdapter(arrayAdapter1);
+
+        obj = (Button)findViewById(R.id.buttonCreate);
+        obj.setOnClickListener(new  View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(),DisplayCharacter.class);
+                startActivity(intent);
+            }
+        });
 
     }
 

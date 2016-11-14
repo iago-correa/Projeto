@@ -17,6 +17,7 @@
         </activity>
         <activity android:name="com.example.iago.application.DisplayCharacters" />
         <activity android:name="com.example.iago.application.CreateCharacter1" />
+        <activity android:name="com.example.iago.application.DisplayCharacter" />
     </application>
 
 </manifest>

@@ -441,8 +441,8 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Próximo"
-            android:id="@+id/buttonNext"
+            android:text="Criar"
+            android:id="@+id/buttonCreate"
             android:layout_column="0"
             android:layout_row="8"/>
 
