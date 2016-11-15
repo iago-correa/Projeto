@@ -332,8 +332,21 @@ public class DBHelper extends SQLiteOpenHelper{
         contentValues.put(CHAR_COLUMN_SAB, sabedoria);
         contentValues.put(CHAR_COLUMN_CAR, carisma);
         contentValues.put(CHAR_COLUMN_RAÇA, raçaid);
-        contentValues.put(CHAR_COLUMN_NIVEL, raçaid);
+        contentValues.put(CHAR_COLUMN_NIVEL, 0);
         db.insert(CHAR_TABLE_NAME, null, contentValues);
+        contentValues = new ContentValues();
+        Cursor res =  db.rawQuery( "select * from personagens", null );
+        res.moveToLast();
+        int charid = res.getInt(res.getColumnIndex("id"));
+        contentValues.put(FEATPOINTS_CHARID,charid);
+        contentValues.put(FEATPOINTS_COMBAT,0);
+        contentValues.put(FEATPOINTS_MAGIC,0);
+        contentValues.put(FEATPOINTS_SKILL,0);
+        contentValues.put(FEATPOINTS_DIVINE,0);
+        contentValues.put(FEATPOINTS_TORMENTA,0);
+        contentValues.put(FEATPOINTS_GENERAL,0);
+        db.insert(FEATPOINTS_TABLE_NAME, null, contentValues);
+
         return true;
     }
 
