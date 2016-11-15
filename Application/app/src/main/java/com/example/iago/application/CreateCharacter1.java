@@ -2,6 +2,7 @@ package com.example.iago.application;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,17 +11,36 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.TextView;
+
 import java.util.ArrayList;
 
 /**
  * Created by Iago on 18/10/2016.
  */
+
 public class CreateCharacter1 extends Activity {
 
     private DBHelper mydb;
     private Button buttonCreate;
     private ImageButton buttonInfoClass, buttonInfoRaca;
 
+    public void dialogBox(String content){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setMessage(content);
+        alertDialogBuilder.setTitle("Descrição");
+        alertDialogBuilder.setPositiveButton("Ok",
+                new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+
+                    }
+                });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,23 +80,9 @@ public class CreateCharacter1 extends Activity {
         buttonInfoClass.setOnClickListener(new  View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                //AlertDialog.Builder builder1 = new AlertDialog.Builder(getBaseContext());
                 String nome = (String)spinner2.getSelectedItem();
-                String desc = mydb.getDescr(nome,"classe");
-                buttonCreate.setText(desc);
-               /* builder1.setMessage(desc);
-                builder1.setCancelable(true);
-
-                builder1.setPositiveButton(
-                        "Fechar",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-
-                AlertDialog alert11 = builder1.create();
-                alert11.show();*/
+                final String desc = mydb.getDescr(nome,"classe");
+                dialogBox(desc.replace("\"", ""));
             }
         });
 
@@ -84,8 +90,9 @@ public class CreateCharacter1 extends Activity {
         buttonInfoRaca.setOnClickListener(new  View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(),DisplayCharacter.class);
-                startActivity(intent);
+                String nome = (String)spinner.getSelectedItem();
+                final String desc = mydb.getDescr(nome,"raca");
+                dialogBox(desc.replace("\"", ""));
             }
         });
 
