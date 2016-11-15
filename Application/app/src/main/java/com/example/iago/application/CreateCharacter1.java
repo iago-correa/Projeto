@@ -7,9 +7,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.GridLayout;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -24,6 +27,7 @@ public class CreateCharacter1 extends Activity {
     private DBHelper mydb;
     private Button buttonCreate;
     private ImageButton buttonInfoClass, buttonInfoRaca;
+    private Spinner spinnerTraceOne, spinnerTraceTwo;
 
     public void dialogBox(String content){
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
@@ -58,8 +62,8 @@ public class CreateCharacter1 extends Activity {
         final Spinner spinner = (Spinner) findViewById(R.id.spinnerRaca);
         final Spinner spinner2 = (Spinner) findViewById(R.id.spinnerClasse);
 
-        ArrayAdapter arrayAdapter1 = new ArrayAdapter(this,android.R.layout.simple_spinner_item, classes);
-        ArrayAdapter arrayAdapter2 = new ArrayAdapter(this,android.R.layout.simple_spinner_item, racas);
+        ArrayAdapter arrayAdapter1 = new ArrayAdapter(this, android.R.layout.simple_spinner_item, classes);
+        ArrayAdapter arrayAdapter2 = new ArrayAdapter(this, android.R.layout.simple_spinner_item, racas);
 
         arrayAdapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         arrayAdapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -67,35 +71,161 @@ public class CreateCharacter1 extends Activity {
         spinner.setAdapter(arrayAdapter2);
         spinner2.setAdapter(arrayAdapter1);
 
-        buttonCreate = (Button)findViewById(R.id.buttonCreate);
-        buttonCreate.setOnClickListener(new  View.OnClickListener(){
+        buttonCreate = (Button) findViewById(R.id.buttonCreate);
+
+        spinnerTraceOne = (Spinner) findViewById(R.id.spinnerTrace1);
+        spinnerTraceTwo = (Spinner) findViewById(R.id.spinnerTrace2);
+
+        final String[] sts = {"FOR", "DES", "CON", "INT", "SAB", "CAR"};
+
+        ArrayAdapter<String> adapterSts = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, sts);
+        adapterSts.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerTraceOne.setAdapter(adapterSts);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+
+                String raca = (String) spinner.getSelectedItem();
+
+                if (raca.equals("Humano")) {
+
+                    GridLayout grid = (GridLayout) findViewById(R.id.mainGrid);
+                    GridLayout.LayoutParams param = new GridLayout.LayoutParams();
+                    param.height = GridLayout.LayoutParams.WRAP_CONTENT;
+                    param.width = GridLayout.LayoutParams.MATCH_PARENT;
+                    param.columnSpec = GridLayout.spec(0);
+                    param.rowSpec = GridLayout.spec(9);
+                    buttonCreate.setLayoutParams(param);
+
+                    spinnerTraceOne.setVisibility(View.VISIBLE);
+
+                    String[] sts2 = new String[5];
+                    int j = 0;
+
+                    for (int i = 0; i < sts.length; i++) {
+                        if (!sts[i].equals("FOR")) {
+                            sts2[j] = sts[i];
+                            j++;
+                        }
+                    }
+
+                    ArrayAdapter<String> adapterSts = new ArrayAdapter<String>(CreateCharacter1.this, android.R.layout.simple_spinner_item, sts2);
+                    adapterSts.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinnerTraceTwo.setAdapter(adapterSts);
+
+                    spinnerTraceTwo.setVisibility(View.VISIBLE);
+
+
+                } else {
+
+                    GridLayout grid = (GridLayout) findViewById(R.id.mainGrid);
+                    GridLayout.LayoutParams param = new GridLayout.LayoutParams();
+                    param.height = GridLayout.LayoutParams.WRAP_CONTENT;
+                    param.width = GridLayout.LayoutParams.MATCH_PARENT;
+                    param.columnSpec = GridLayout.spec(0);
+                    param.rowSpec = GridLayout.spec(7);
+                    buttonCreate.setLayoutParams(param);
+
+                    spinnerTraceOne.setVisibility(View.INVISIBLE);
+                    spinnerTraceTwo.setVisibility(View.INVISIBLE);
+
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+
+        });
+
+        spinnerTraceOne.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+
+                String raca = (String) spinner.getSelectedItem();
+
+                if (raca.equals("Humano")) {
+
+                    GridLayout grid = (GridLayout) findViewById(R.id.mainGrid);
+                    GridLayout.LayoutParams param = new GridLayout.LayoutParams();
+                    param.height = GridLayout.LayoutParams.WRAP_CONTENT;
+                    param.width = GridLayout.LayoutParams.MATCH_PARENT;
+                    param.columnSpec = GridLayout.spec(0);
+                    param.rowSpec = GridLayout.spec(9);
+                    buttonCreate.setLayoutParams(param);
+
+                    String[] sts2 = new String[5];
+                    int j = 0;
+
+                    for (int i = 0; i < sts.length; i++) {
+                        if (!sts[i].equals((String) spinnerTraceOne.getSelectedItem())) {
+                            sts2[j] = sts[i];
+                            j++;
+                        }
+                    }
+
+                    ArrayAdapter<String> adapterSts = new ArrayAdapter<String>(CreateCharacter1.this, android.R.layout.simple_spinner_item, sts2);
+                    adapterSts.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinnerTraceTwo.setAdapter(adapterSts);
+
+                    spinnerTraceTwo.setVisibility(View.VISIBLE);
+
+                } else {
+
+                    GridLayout grid = (GridLayout) findViewById(R.id.mainGrid);
+                    GridLayout.LayoutParams param = new GridLayout.LayoutParams();
+                    param.height = GridLayout.LayoutParams.WRAP_CONTENT;
+                    param.width = GridLayout.LayoutParams.MATCH_PARENT;
+                    param.columnSpec = GridLayout.spec(0);
+                    param.rowSpec = GridLayout.spec(7);
+                    buttonCreate.setLayoutParams(param);
+
+                    spinnerTraceOne.setVisibility(View.INVISIBLE);
+                    spinnerTraceTwo.setVisibility(View.INVISIBLE);
+
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+
+        });
+
+        buttonCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(),DisplayCharacter.class);
+                Intent intent = new Intent(getApplicationContext(), DisplayCharacter.class);
                 startActivity(intent);
             }
         });
 
-        buttonInfoClass = (ImageButton)findViewById(R.id.buttonInfoClasse);
-        buttonInfoClass.setOnClickListener(new  View.OnClickListener(){
+        buttonInfoClass = (ImageButton) findViewById(R.id.buttonInfoClasse);
+        buttonInfoClass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String nome = (String)spinner2.getSelectedItem();
-                final String desc = mydb.getDescr(nome,"classe");
+                String nome = (String) spinner2.getSelectedItem();
+                final String desc = mydb.getDescr(nome, "classe");
                 dialogBox(desc.replace("\"", ""));
             }
         });
 
-        buttonInfoRaca = (ImageButton)findViewById(R.id.buttonInfoRaca);
-        buttonInfoRaca.setOnClickListener(new  View.OnClickListener(){
+        buttonInfoRaca = (ImageButton) findViewById(R.id.buttonInfoRaca);
+        buttonInfoRaca.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String nome = (String)spinner.getSelectedItem();
-                final String desc = mydb.getDescr(nome,"raca");
+                String nome = (String) spinner.getSelectedItem();
+                final String desc = mydb.getDescr(nome, "raca");
                 dialogBox(desc.replace("\"", ""));
             }
         });
 
     }
+
 
 }

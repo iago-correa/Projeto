@@ -14,7 +14,8 @@
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:rowCount="9">
+        android:rowCount="10"
+        android:id="@+id/mainGrid">
 
         <TextView
             android:layout_width="match_parent"
@@ -429,14 +430,29 @@
 
             </GridLayout>
 
-        <Button
+        <Spinner
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Traços raciais"
-            android:id="@+id/buttonTracoRaca"
-            android:layout_column="0"
+            android:id="@+id/spinnerTrace1"
+            android:textSize="20sp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:padding="3dp"
             android:layout_row="7"
-            android:clickable="false"/>
+            android:layout_column="0"
+            android:visibility="invisible"/>
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinnerTrace2"
+            android:textSize="20sp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:padding="3dp"
+            android:layout_row="8"
+            android:layout_column="0"
+            android:visibility="invisible"/>
 
         <Button
             android:layout_width="match_parent"
@@ -444,7 +460,7 @@
             android:text="Criar"
             android:id="@+id/buttonCreate"
             android:layout_column="0"
-            android:layout_row="8"/>
+            android:layout_row="7"/>
 
     </GridLayout>
 
