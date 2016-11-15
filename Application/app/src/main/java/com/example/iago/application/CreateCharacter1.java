@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.SQLException;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,6 +17,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -54,7 +56,26 @@ public class CreateCharacter1 extends Activity {
 
         mydb = new DBHelper(this);
 
-        mydb.inicializaDB();
+        try {
+
+            mydb.inicializaDB();
+
+        } catch (IOException ioe) {
+
+            throw new Error("Unable to create database");
+
+        }
+
+        try {
+
+            mydb.openDataBase();
+
+        }catch(SQLException sqle){
+
+            throw sqle;
+
+        }
+
 
         ArrayList classes = mydb.getAll("classes");
         ArrayList racas = mydb.getAll("racas");

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.Intent;
+import android.database.SQLException;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +20,7 @@ import android.widget.Spinner;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class DisplayCharacter extends AppCompatActivity {
@@ -32,8 +34,25 @@ public class DisplayCharacter extends AppCompatActivity {
         setContentView(R.layout.activity_display_character);
 
         mydb = new DBHelper(this);
+        try {
 
-        mydb.inicializaDB();
+            mydb.inicializaDB();
+
+        } catch (IOException ioe) {
+
+            throw new Error("Unable to create database");
+
+        }
+
+        try {
+
+            mydb.openDataBase();
+
+        }catch(SQLException sqle){
+
+            throw sqle;
+
+        }
 
         ArrayList classes = mydb.getAll("classes");
 

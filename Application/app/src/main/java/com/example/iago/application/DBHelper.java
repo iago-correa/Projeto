@@ -1,10 +1,16 @@
 package com.example.iago.application;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -12,15 +18,19 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase;
+
+import static java.lang.System.out;
 
 public class DBHelper extends SQLiteOpenHelper{
 
     private Context contex;
 
     public static final String DATABASE_NAME = "TormentaDB.db";
-
+    private SQLiteDatabase myDataBase;
     public static final String CHAR_TABLE_NAME = "personagens";
     public static final String CHAR_COLUMN_ID = "id";
     public static final String CHAR_COLUMN_NAME = "nome";
@@ -238,39 +248,76 @@ public class DBHelper extends SQLiteOpenHelper{
         onCreate(db);
     }
 
-    public void inicializaDB(){
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("delete from "+RACE_TABLE_NAME);
-        db.execSQL("delete from "+CLASS_TABLE_NAME);
-
-        String line = "";
-
-        try {
-            BufferedReader buffer = new BufferedReader(new InputStreamReader(contex.getAssets().open("classes.csv")));
-
-            while ((line = buffer.readLine()) != null) {
-                String[] str = line.split(";");
-                this.insertClasse(str[0],Integer.parseInt(str[1]),Integer.parseInt(str[2]),Integer.parseInt(str[3]),Boolean.parseBoolean(str[4]),Integer.parseInt(str[5]),str[6],str[7]);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+    public boolean copyDataBase()  throws IOException {
+        InputStream myInput = contex.getAssets().open(DATABASE_NAME);
+        String outFileName = "/data/data/com.example.iago.application/databases/" + DATABASE_NAME;
+        OutputStream myOutput = new FileOutputStream(outFileName);
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = myInput.read(buffer))>0){
+            myOutput.write(buffer, 0, length);
         }
 
+        //Close the streams
+        myOutput.flush();
+        myOutput.close();
+        myInput.close();
+        return true;
+    }
 
-        try {
-            BufferedReader buffer = new BufferedReader(new InputStreamReader(contex.getAssets().open("racas.csv")));
-            while ((line = buffer.readLine()) != null) {
-                String[] str = line.split(";");
-                this.insertRaça(str[0],"",str[1]);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+    public boolean checkDataBase(){
+
+        SQLiteDatabase checkDB = null;
+
+        try{
+            String myPath = "/data/data/com.example.iago.application/databases/" + DATABASE_NAME;
+            checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+
+        }catch(SQLiteException e){
+
+            //database does't exist yet.
+
         }
+
+        if(checkDB != null){
+
+            checkDB.close();
+
+        }
+
+        return checkDB != null ? true : false;
+    }
+
+    public void inicializaDB() throws IOException{
+
+        boolean dbExist = checkDataBase();
+
+        if(dbExist){
+            //do nothing - database already exist
+        }else{
+
+            //By calling this method and empty database will be created into the default system path
+            //of your application so we are gonna be able to overwrite that database with our database.
+            this.getReadableDatabase();
+
+            try {
+
+                copyDataBase();
+
+            } catch (IOException e) {
+
+                throw new Error("Error copying database");
+
+            }
+        }
+
+    }
+
+    public void openDataBase() throws SQLException {
+
+        //Open the database
+        String myPath = "/data/data/com.example.iago.application/databases/"+ DATABASE_NAME;
+        myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
 
     }
 
@@ -301,7 +348,7 @@ public class DBHelper extends SQLiteOpenHelper{
         contentValues.put(CLASS_COLUMN_NÍVEL,nivelmax);
         contentValues.put(CLASS_COLUMN_ORIGEM,origem);
         contentValues.put(CLASS_COLUMN_DESCRIPTION,descrição);
-        System.out.println(contentValues);
+        out.println(contentValues);
         db.insert(CLASS_TABLE_NAME, null, contentValues);
         return true;
     }
@@ -321,7 +368,7 @@ public class DBHelper extends SQLiteOpenHelper{
         contentValues.put(RACE_COLUMN_NAME, name);
         contentValues.put(RACE_COLUMN_ORIGEM,origem);
         contentValues.put(RACE_COLUMN_DESCRIPTION,descricao);
-        System.out.println(contentValues);
+        out.println(contentValues);
         db.insert(RACE_TABLE_NAME, null, contentValues);
         return true;
     }
@@ -902,6 +949,7 @@ public class DBHelper extends SQLiteOpenHelper{
         }
         return true;
     }
+
     public boolean updatePersonagem (Integer id, String name, int força, int destreza, int constituição, int inteligência, int sabedoria, int carisma){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -977,5 +1025,6 @@ public class DBHelper extends SQLiteOpenHelper{
         }
         return array_list;
     }
+
 
 }
