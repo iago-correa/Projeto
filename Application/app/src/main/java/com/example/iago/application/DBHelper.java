@@ -337,7 +337,7 @@ public class DBHelper extends SQLiteOpenHelper{
         Cursor res = null;
         String desc;
         if (table == "classe") {
-            res = db.rawQuery("select classdescricao from classes where classnome=" + nome + "", null);
+            res = db.rawQuery("select classdescricao from classes where classnome='" + nome + "'", null);
             desc = res.getString(res.getColumnIndex(DBHelper.CLASS_COLUMN_DESCRIPTION));
         } else if (table == "raca") {
             res = db.rawQuery("select racadescricao from racas where racanome=" + nome + "", null);
