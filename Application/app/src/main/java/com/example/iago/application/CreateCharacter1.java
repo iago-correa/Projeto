@@ -56,27 +56,6 @@ public class CreateCharacter1 extends Activity {
 
         mydb = new DBHelper(this);
 
-        try {
-
-            mydb.inicializaDB();
-
-        } catch (IOException ioe) {
-
-            throw new Error("Unable to create database");
-
-        }
-
-        try {
-
-            mydb.openDataBase();
-
-        }catch(SQLException sqle){
-
-            throw sqle;
-
-        }
-
-
         ArrayList classes = mydb.getAll("classes");
         ArrayList racas = mydb.getAll("racas");
 

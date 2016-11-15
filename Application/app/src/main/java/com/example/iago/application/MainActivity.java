@@ -1,6 +1,7 @@
 package com.example.iago.application;
 
 import android.content.res.AssetManager;
+import android.database.SQLException;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,10 +30,23 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private ImageView obj;
-    private DBHelper db;
+    private DBHelper mydb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        mydb = new DBHelper(this);
+
+        try {
+
+            mydb.inicializaDB();
+
+        } catch (IOException ioe) {
+
+            throw new Error("Unable to create database");
+
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
