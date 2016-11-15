@@ -64,6 +64,40 @@ public class DBHelper extends SQLiteOpenHelper{
     public static final String SKILL_COLUMN_ARMOR = "periciapen";
     public static final String SKILL_COLUMN_ATT = "periciatt";
 
+    public static final String WEAPON_TABLE_NAME = "armas";
+    public static final String WEAPON_COLUMN_NAME = "armanome";
+    public static final String WEAPON_COLUMN_ID = "armaid";
+    public static final String WEAPON_COLUMN_HAND = "armamao";
+    public static final String WEAPON_COLUMN_DAMAGE = "armadano";
+    public static final String WEAPON_COLUMN_CRITICAL = "armacrit";
+    public static final String WEAPON_COLUMN_MULTIPLIER = "armamult";
+    public static final String WEAPON_COLUMN_DTYPE = "armadtipo";
+    public static final String WEAPON_COLUMN_DES = "armades";
+    public static final String WEAPON_COLUMN_LONG = "armahaste";
+    public static final String WEAPON_COLUMN_DISTANCE = "armadist";
+
+    public static final String SPECWEAPON_TABLE_NAME = "armaespecifica";
+    public static final String SPECWEAPON_COLUMN_NAME = "armaespecificanome";
+    public static final String SPECWEAPON_COLUMN_MAGIC = "armaespecificamagia";
+    public static final String SPECWEAPON_COLUMN_BASE = "armaespecificabase";
+    public static final String SPECWEAPON_COLUMN_BONUS = "armaespecificabonus";
+    public static final String SPECWEAPON_CHAR_ID = "armaespecificachar";
+
+    public static final String SPECARMOR_TABLE_NAME = "armaduraespecifica";
+    public static final String SPECARMOR_COLUMN_NAME = "armaduraespecificanome";
+    public static final String SPECARMOR_COLUMN_MAGIC = "armaduraespecificamagia";
+    public static final String SPECARMOR_COLUMN_BASE = "armaduraespecificabase";
+    public static final String SPECARMOR_COLUMN_BONUS = "armaduraespecificabonus";
+    public static final String SPECARMOR_CHAR_ID = "armaduraespecificachar";
+
+    public static final String ARMOR_TABLE_NAME = "armaduras";
+    public static final String ARMOR_COLUMN_NAME = "armaduranome";
+    public static final String ARMOR_COLUMN_ID = "armaduraid";
+    public static final String ARMOR_COLUMN_TYPE = "armaduraid";
+    public static final String ARMOR_COLUMN_CA = "armaduraca";
+    public static final String ARMOR_COLUMN_BMD = "armadurabmd";
+    public static final String ARMOR_COLUMN_PA = "armadurapen";
+
     public static final String PREREQ_TABLE_NAME = "prerequisitos";
     public static final String PREREQ_COLUMN_FID = "prereqtalid";
     public static final String PREREQ_COLUMN_TYPE = "prereqtype";
@@ -85,6 +119,15 @@ public class DBHelper extends SQLiteOpenHelper{
     public static final String CHARFEAT_TIMES = "relaccharfeatnum";
     public static final String CHARFEAT_AUX = "relaccharfeataux";
 
+    public static final String ABILITY_TABLE_NAME = "habilidades";
+    public static final String ABILITY_COLUMN_ID = "habilidadeid";
+    public static final String ABILITY_COLUMN_NAME = "habilidadenome";
+    public static final String ABILITY_COLUMN_VALUE = "habilidadevalor";
+
+    public static final String CHARABILITY_REL_NAME = "relaccharab";
+    public static final String CHARABILITY_CHAR_ID = "relaccharabchar";
+    public static final String CHARABILITY_SKILL_ID = "relaccharabab";
+    public static final String CHARABILITY_AUX = "relaccharabaux";
 
     private HashMap hp;
 
@@ -123,6 +166,37 @@ public class DBHelper extends SQLiteOpenHelper{
                 "create table " + SKILL_TABLE_NAME +
                         "(periciaid integer primary key, pericianome text, periciatr boolean, periciapen boolean, periciatt integer)"
         );
+
+        db.execSQL(
+                "create table " + ABILITY_TABLE_NAME +
+                        "(habilidadeid integer primary key, habilidadenome text, habilidadevalor integer)"
+        );
+
+        db.execSQL(
+                "create table " + WEAPON_TABLE_NAME +
+                        "(armaid integer primary key, armanome text, armatipo integer, armamao integer, armadano text, armamult integer, armacrit integer, armadtipo integer, armades integer, armalong integer, armadist integer)"
+        );
+
+        db.execSQL(
+                "create table " + SPECWEAPON_TABLE_NAME +
+                        "(armaespecificanome text, armaespecificamagia text, armaespecificabonus integer,armaespecificabase integer, armaespecificachar integer, foreign key(armaespecificabase) references armas(armaid), foreign key(armaespecificachar) references personagens(id))"
+        );
+
+        db.execSQL(
+                "create table " + SPECARMOR_TABLE_NAME +
+                        "(armaduraespecificanome text, armaduraespecificamagia text, armaduraespecificabonus integer,armaduraespecificabase integer, armaduraespecificachar integer, foreign key(armaduraespecificabase) references armaduras(armaduraid), foreign key(armaduraespecificachar) references personagens(id))"
+        );
+
+        db.execSQL(
+                "create table " + ARMOR_TABLE_NAME +
+                        "(armaduraid integer primary key, armaduranome text, armaduratipo integer, armaduraca integer, armadurabmd text, armadurapen integer)"
+        );
+
+        db.execSQL(
+                "create table " + ABILITY_TABLE_NAME +
+                        "(habilidadeid integer primary key, habilidadenome text, habilidadevalor integer)"
+        );
+
         db.execSQL(
                 "create table " + CHARFEAT_REL_NAME  +
                         "(relaccharfeatchar integer, relaccharfeatfeat integer, " + CHARFEAT_TIMES + " integer, " + CHARFEAT_AUX + " integer, foreign key(relaccharfeatchar) references personagens(id), foreign key(relaccharfeatfeat) references talentos(talentoid))"
@@ -130,7 +204,18 @@ public class DBHelper extends SQLiteOpenHelper{
         db.execSQL(
                 "create table " + PREREQ_TABLE_NAME +
                         "(prereqtalid integer, prereqtype text, prereqesp text, prereqval integer, foreign key(prereqtalid) references talentos(talentoid))");
+
+        db.execSQL(
+                "create table " + CHARSKILL_REL_NAME  +
+                        "(relaccharskillchar integer, relaccharskillskill integer, foreign key(relaccharskillchar) references personagens(id), foreign key(relaccharskillskill) references pericias(periciaid))"
+        );
+
+        db.execSQL(
+                "create table " + CHARABILITY_REL_NAME  +
+                        "(relaccharabchar integer, relaccharabab integer, relaccharabaux integer, foreign key(relaccharabchar) references personagens(id), foreign key(relaccharabab) references habilidades(habilidadeid))"
+        );
     }
+
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -237,9 +322,17 @@ public class DBHelper extends SQLiteOpenHelper{
         if  (table == "personagem")
             res =  db.rawQuery( "select * from personagens where id="+id+"", null );
         else if  (table == "classe")
-            res =  db.rawQuery( "select * from classes where id="+id+"", null );
+            res =  db.rawQuery( "select * from classes where classid="+id+"", null );
         else if  (table == "raca")
-            res =  db.rawQuery( "select * from racas where id="+id+"", null );
+            res =  db.rawQuery( "select * from racas where racaid="+id+"", null );
+        else if  (table == "talento")
+            res =  db.rawQuery( "select * from talentos where talentoid="+id+"", null );
+        else if  (table == "pericia")
+            res =  db.rawQuery( "select * from pericias where periciaid="+id+"", null );
+        else if  (table == "armadura")
+            res =  db.rawQuery( "select * from armaduras where armaduraid="+id+"", null );
+        else if  (table == "arma")
+            res =  db.rawQuery( "select * from armas where armaid="+id+"", null );
         return res;
     }
 
@@ -335,9 +428,43 @@ public class DBHelper extends SQLiteOpenHelper{
         return true;
     }
 
+    public boolean abilityGet (int charid, int abilityid) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = hasAbility(charid,abilityid);
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(CHARABILITY_CHAR_ID, charid);
+        contentValues.put(CHARABILITY_SKILL_ID, abilityid);
+        if (res != null) {
+            contentValues.put(CHARABILITY_AUX, res.getInt(res.getColumnIndex(DBHelper.CHARABILITY_AUX))+1);
+            db.update(CHARABILITY_REL_NAME, contentValues, CHARABILITY_SKILL_ID + " = ? and " + CHARABILITY_CHAR_ID + " = ?", new String[]{Integer.toString(abilityid), Integer.toString(charid)});
+        } else {
+            contentValues.put(CHARABILITY_AUX, 1);
+            db.insert(CHARABILITY_REL_NAME, null, contentValues);
+        }
+        return true;
+    }
+
     public Cursor hasFeat (int charid, int featid) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("select * from " + CHARFEAT_REL_NAME + " where " + CHARFEAT_CHAR_ID + "=" +charid+ " and " + CHARFEAT_FEAT_ID + "=" +featid+ "", null);
+        return res;
+    }
+
+    public Cursor hasAbility (int charid, int abilityid) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery("select * from " + CHARABILITY_REL_NAME + " where " + CHARABILITY_CHAR_ID + "=" +charid+ " and " + CHARABILITY_SKILL_ID+ "=" +abilityid+ "", null);
+        return res;
+    }
+
+    public Cursor hasSkill (int charid, int skillid) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery("select * from " + CHARSKILL_REL_NAME + " where " + CHARSKILL_CHAR_ID + "=" +charid+ " and " + CHARSKILL_SKILL_ID + "=" +skillid+ "", null);
+        return res;
+    }
+
+    public Cursor hasArmor (int charid) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery("select * from " + SPECARMOR_TABLE_NAME + " where " + SPECARMOR_CHAR_ID + "=" +charid+ "", null);
         return res;
     }
 
@@ -378,6 +505,58 @@ public class DBHelper extends SQLiteOpenHelper{
 
     }
 
+    public String getName (String type, int id) {
+        String coluna= "";
+        boolean error = false;
+        Cursor res = getData(type,id);
+        if (type == "talento")
+            coluna = "talentonome";
+        else if (type == "pericia")
+            coluna = "pericianome";
+        else if (type == "classe")
+            coluna = "classnome";
+        else if (type == "raca")
+            coluna = "racanome";
+        else if (type == "arma")
+            coluna = "armanome";
+        else if (type == "armadura")
+            coluna = "armaduranome";
+        else
+            error = true;
+        if(!error)
+            return res.getString(res.getColumnIndex(coluna));
+        else
+            return "";
+    }
+
+    public String getPrereq (int featid) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String type, prereq = "";
+        Cursor res = db.rawQuery("select * from " + PREREQ_TABLE_NAME + " where " + PREREQ_COLUMN_FID + "=" +featid+ "", null);
+        if (res != null) {
+            res.moveToFirst();
+            while (res.isAfterLast() == false) {
+                type = res.getString(res.getColumnIndex(PREREQ_COLUMN_TYPE));
+                if (type == "Atributo") {
+                    prereq += res.getString(res.getColumnIndex(PREREQ_COLUMN_EXTRA)) + " " + res.getString(res.getColumnIndex(PREREQ_COLUMN_VALUE)) + "; ";
+                } else if (type == "Talento") {
+                    prereq += getName("Talento",res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE))) + "; ";
+                }
+                else if (type == "BBA") {
+                    prereq += "BBA " + res.getString(res.getColumnIndex(PREREQ_COLUMN_VALUE)) + "; ";
+                }
+                else if (type == "Classe") {
+                    prereq += res.getString(res.getColumnIndex(PREREQ_COLUMN_EXTRA)) + " de " + res.getString(res.getColumnIndex(PREREQ_COLUMN_VALUE)) + " nível; ";
+                }
+                else if ((type == "Perícia")&&((res.getString(res.getColumnIndex(PREREQ_COLUMN_VALUE)))=="1")) {
+                    prereq += "Treinado em " + res.getString(res.getColumnIndex(PREREQ_COLUMN_EXTRA)) + "; ";
+                }
+                res.moveToNext();
+            }
+        }
+        return prereq;
+    }
+
     public int mod (int charid, String atributo) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res =  db.rawQuery( "select * from personagens where id="+charid+"", null );
@@ -401,7 +580,27 @@ public class DBHelper extends SQLiteOpenHelper{
 
     public int CA (int charid) {
         int CA = 10;
-        CA += mod(charid, "DES");
+        int aux, aux2 = mod(charid, "DES");
+        Cursor res = hasArmor(charid);
+        if (res==null) {
+            CA += aux2;
+            if (hasFeat(charid,18)!=null)
+                CA += mod(charid,"CON");
+        }
+        else {
+            res = getData("armadura",res.getInt(res.getColumnIndex(SPECARMOR_COLUMN_BASE)));
+            aux = res.getInt(res.getColumnIndex(ARMOR_COLUMN_BMD));
+            if (aux < aux2)
+                CA += aux;
+            else
+                CA += aux2;
+        }
+        res = getData("personagem",charid);
+        CA += (int)(res.getInt(res.getColumnIndex("nivel"))/2);
+        if (hasFeat(charid,33)!=null)
+            CA++;
+        if (hasFeat(charid,17)!=null)
+            CA++;
         return CA;
     }
 
@@ -443,6 +642,65 @@ public class DBHelper extends SQLiteOpenHelper{
         return PVs;
     }
 
+    public int BonusAtaque (String nomearma) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        int bonus = 0;
+        Cursor res = db.rawQuery( "select * from armaespecifica where armaespecificanome="+nomearma+"", null );
+        int charid = res.getInt(res.getColumnIndex(SPECWEAPON_CHAR_ID));
+        bonus += BBA(charid);
+        bonus += res.getInt(res.getColumnIndex(SPECWEAPON_COLUMN_BONUS));
+        res = getData("arma",res.getInt(res.getColumnIndex(SPECWEAPON_COLUMN_BASE)));
+        if ((res.getInt(res.getColumnIndex(WEAPON_COLUMN_HAND))==4) || ((hasFeat(charid,2)!=null)&&((res.getInt(res.getColumnIndex(WEAPON_COLUMN_DES)))>0))) {
+            bonus += mod(charid, "DES");
+        } else
+            bonus += mod(charid, "FOR");
+        return bonus;
+    }
+
+    public String BonusDano (String nomearma) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        int bonus = 0;
+        Cursor res = db.rawQuery( "select * from armaespecifica where armaespecificanome="+nomearma+"", null );
+        int charid = res.getInt(res.getColumnIndex(SPECWEAPON_CHAR_ID));
+        bonus += res.getInt(res.getColumnIndex(SPECWEAPON_COLUMN_BONUS));
+        res = getData("arma",res.getInt(res.getColumnIndex(SPECWEAPON_COLUMN_BASE)));
+        int hand = res.getInt(res.getColumnIndex(WEAPON_COLUMN_HAND));
+        if ((hand==3)&&(hasFeat(charid,39)!=null)) {
+            bonus += 2 * mod(charid, "FOR");
+        } else if ((hand==4)&&(hasFeat(charid,49)!=null)) {
+            bonus += mod(charid, "DES");
+        }
+        if (((res.getInt(res.getColumnIndex(WEAPON_COLUMN_DES)))>0)&&(hasFeat(charid,15)!=null)) {
+            bonus += mod(charid, "INT");
+        }
+        String end = (res.getString(res.getColumnIndex(WEAPON_COLUMN_DAMAGE))) + "+" + Integer.toString(bonus);
+        return end;
+    }
+
+    public String Crítico (int armaid) {
+        Cursor res = getData("arma",armaid);
+        String result = "";
+        int margem = res.getInt(res.getColumnIndex(WEAPON_COLUMN_CRITICAL));
+        int mult = res.getInt(res.getColumnIndex(WEAPON_COLUMN_CRITICAL));
+        if (margem == 3)
+            result += "18-20";
+        else if (margem == 2)
+            result += "19-20";
+        if ((margem > 1)&&(mult!=1))
+            result += "/";
+        if (mult == 2)
+            result += "x3";
+        else if (mult == 3)
+            result += "x4";
+        else if (mult == 0)
+            result += "esp";
+        else if ((mult == 1)&&(margem==1))
+            result = "x2";
+        return result;
+
+
+    }
+
     public int numberOfRows(String table){
         SQLiteDatabase db = this.getReadableDatabase();
         int numRows = 0;
@@ -457,6 +715,31 @@ public class DBHelper extends SQLiteOpenHelper{
         else if  (table == "pericia")
             numRows = (int) DatabaseUtils.queryNumEntries(db, SKILL_TABLE_NAME);
         return numRows;
+    }
+
+    public int periciaBonus (int charid, int periciaid)
+    {
+        String att;
+        int bonus = 0, train, pen;
+        Cursor res = getData("pericia",periciaid);
+        train = res.getInt(res.getColumnIndex("periciatr"));
+        pen = res.getInt(res.getColumnIndex("periciapen"));
+        att = res.getString(res.getColumnIndex("periciatt"));
+        bonus += mod(charid,att);
+        if (pen > 0) {
+            res = hasArmor(charid);
+            if (res != null)
+                res = getData("armadura",res.getInt(res.getColumnIndex("armaduraespecificabase")));
+            bonus = bonus - (res.getInt(res.getColumnIndex("armadurapen")));
+        }
+        res = getData("personagem",charid);
+        if (hasSkill(charid,periciaid) != null)
+            bonus += res.getInt(res.getColumnIndex("nivel"))+3;
+        else if (train == 0)
+            bonus += (int)(res.getInt(res.getColumnIndex("nivel"))/2);
+        else
+            bonus = 0;
+        return bonus;
     }
 
     public boolean raceUpdate (int charid) {
@@ -490,6 +773,44 @@ public class DBHelper extends SQLiteOpenHelper{
         return true;
     }
 
+    public boolean AbilityTable (int charid, int classid, int level) {
+        if (classid == 1) {
+            if ((level%4 == 0)  || (level == 1))
+                abilityGet(charid, 1);
+            if (level == 1)
+                abilityGet(charid, 2);
+            if (level == 2)
+                abilityGet(charid, 3);
+            if (level%6 == 3)
+                abilityGet(charid, 4);
+            if (level == 5)
+                abilityGet(charid, 5);
+            if ((level>6)&&(level%3==1))
+                abilityGet(charid, 6);
+            if (level == 11)
+                abilityGet(charid, 7);
+            if (level == 14)
+                abilityGet(charid, 8);
+            if (level == 17)
+                abilityGet(charid, 9);
+            if (level == 20)
+                abilityGet(charid, 10);
+        } else if (classid == 2) {
+            if ((level%2 == 1)  || (level == 2))
+                abilityGet(charid, 12);
+            if (level == 1)
+                abilityGet(charid, 11);
+        } else if (classid == 3) {
+            if ((level%2 == 1)  || (level == 2))
+                abilityGet(charid, 14);
+            if (level == 1)
+                abilityGet(charid, 13);
+        } else if (classid == 5) {
+            if ((level%5 == 0)  || (level == 1))
+                abilityGet(charid, 24);
+        }
+        return true;
+    }
     public boolean updatePersonagem (Integer id, String name, int força, int destreza, int constituição, int inteligência, int sabedoria, int carisma){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
