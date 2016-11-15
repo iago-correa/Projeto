@@ -14,7 +14,8 @@
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:rowCount="9">
+        android:rowCount="10"
+        android:id="@+id/mainGrid">
 
         <TextView
             android:layout_width="match_parent"
@@ -129,7 +130,7 @@
                     android:layout_height="30dp"
                     android:background="@drawable/roundedbutton"
                     android:src="@drawable/plus"
-                    android:id="@+id/buttonMinusAtr1"
+                    android:id="@+id/buttonPlusAtr1"
                     android:layout_column="0"
                     android:layout_row="0"
                     android:layout_margin="3dp"/>
@@ -149,7 +150,7 @@
                     android:layout_height="30dp"
                     android:background="@drawable/roundedbutton"
                     android:src="@drawable/minus"
-                    android:id="@+id/buttonPlusAtr1"
+                    android:id="@+id/buttonMinusAtr1"
                     android:layout_column="2"
                     android:layout_row="0"
                     android:layout_margin="3dp"/>
@@ -165,7 +166,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Força"
+                    android:text="FOR"
                     android:textSize="20dp"
                     android:layout_column="4"
                     android:layout_row="0"
@@ -179,7 +180,7 @@
                     android:layout_height="30dp"
                     android:background="@drawable/roundedbutton"
                     android:src="@drawable/plus"
-                    android:id="@+id/buttonMinusAtr2"
+                    android:id="@+id/buttonPlusAtr2"
                     android:layout_column="0"
                     android:layout_row="1"
                     android:layout_margin="3dp"/>
@@ -199,7 +200,7 @@
                     android:layout_height="30dp"
                     android:background="@drawable/roundedbutton"
                     android:src="@drawable/minus"
-                    android:id="@+id/buttonPlusAtr2"
+                    android:id="@+id/buttonMinusAtr2"
                     android:layout_column="2"
                     android:layout_row="1"
                     android:layout_margin="3dp"/>
@@ -215,7 +216,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Destreza"
+                    android:text="DES"
                     android:textSize="20dp"
                     android:layout_column="4"
                     android:layout_row="1"
@@ -230,7 +231,7 @@
                     android:layout_height="30dp"
                     android:background="@drawable/roundedbutton"
                     android:src="@drawable/plus"
-                    android:id="@+id/buttonMinusAtr3"
+                    android:id="@+id/buttonPlusAtr3"
                     android:layout_column="0"
                     android:layout_row="2"
                     android:layout_margin="3dp"/>
@@ -250,7 +251,7 @@
                     android:layout_height="30dp"
                     android:background="@drawable/roundedbutton"
                     android:src="@drawable/minus"
-                    android:id="@+id/buttonPlusAtr3"
+                    android:id="@+id/buttonMinusAtr3"
                     android:layout_column="2"
                     android:layout_row="2"
                     android:layout_margin="3dp"/>
@@ -266,7 +267,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Constituição"
+                    android:text="CON"
                     android:textSize="20sp"
                     android:layout_column="4"
                     android:layout_row="2"
@@ -281,7 +282,7 @@
                     android:layout_height="30dp"
                     android:background="@drawable/roundedbutton"
                     android:src="@drawable/plus"
-                    android:id="@+id/buttonMinusAtr4"
+                    android:id="@+id/buttonPlusAtr4"
                     android:layout_column="0"
                     android:layout_row="3"
                     android:layout_margin="3dp"/>
@@ -301,7 +302,7 @@
                     android:layout_height="30dp"
                     android:background="@drawable/roundedbutton"
                     android:src="@drawable/minus"
-                    android:id="@+id/buttonPlusAtr4"
+                    android:id="@+id/buttonMinusAtr4"
                     android:layout_column="2"
                     android:layout_row="3"
                     android:layout_margin="3dp"/>
@@ -317,7 +318,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Inteligência"
+                    android:text="INT"
                     android:textSize="20dp"
                     android:layout_column="4"
                     android:layout_row="3"
@@ -332,7 +333,7 @@
                     android:layout_height="30dp"
                     android:background="@drawable/roundedbutton"
                     android:src="@drawable/plus"
-                    android:id="@+id/buttonMinusAtr5"
+                    android:id="@+id/buttonPlusAtr5"
                     android:layout_column="0"
                     android:layout_row="4"
                     android:layout_margin="3dp"/>
@@ -352,7 +353,7 @@
                     android:layout_height="30dp"
                     android:background="@drawable/roundedbutton"
                     android:src="@drawable/minus"
-                    android:id="@+id/buttonPlusAtr5"
+                    android:id="@+id/buttonMinusAtr5"
                     android:layout_column="2"
                     android:layout_row="4"
                     android:layout_margin="3dp"/>
@@ -368,7 +369,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Sabedoria"
+                    android:text="SAB"
                     android:textSize="20dp"
                     android:layout_column="4"
                     android:layout_row="4"
@@ -383,7 +384,7 @@
                     android:layout_height="30dp"
                     android:background="@drawable/roundedbutton"
                     android:src="@drawable/plus"
-                    android:id="@+id/buttonMinusAtr6"
+                    android:id="@+id/buttonPlusAtr6"
                     android:layout_column="0"
                     android:layout_row="5"
                     android:layout_margin="3dp"/>
@@ -403,7 +404,7 @@
                     android:layout_height="30dp"
                     android:background="@drawable/roundedbutton"
                     android:src="@drawable/minus"
-                    android:id="@+id/buttonPlusAtr6"
+                    android:id="@+id/buttonMinusAtr6"
                     android:layout_column="2"
                     android:layout_row="5"
                     android:layout_margin="3dp"/>
@@ -419,7 +420,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Carisma"
+                    android:text="CAR"
                     android:textSize="20dp"
                     android:layout_column="4"
                     android:layout_row="5"
@@ -429,14 +430,29 @@
 
             </GridLayout>
 
-        <Button
+        <Spinner
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Traços raciais"
-            android:id="@+id/buttonTracoRaca"
-            android:layout_column="0"
+            android:id="@+id/spinnerTrace1"
+            android:textSize="20sp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:padding="3dp"
             android:layout_row="7"
-            android:clickable="false"/>
+            android:layout_column="0"
+            android:visibility="invisible"/>
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinnerTrace2"
+            android:textSize="20sp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:padding="3dp"
+            android:layout_row="8"
+            android:layout_column="0"
+            android:visibility="invisible"/>
 
         <Button
             android:layout_width="match_parent"
@@ -444,7 +460,7 @@
             android:text="Criar"
             android:id="@+id/buttonCreate"
             android:layout_column="0"
-            android:layout_row="8"/>
+            android:layout_row="7"/>
 
     </GridLayout>
 
