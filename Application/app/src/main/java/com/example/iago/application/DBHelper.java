@@ -51,6 +51,15 @@ public class DBHelper extends SQLiteOpenHelper{
     public static final String RACE_COLUMN_ORIGEM = "racaorigem";
     public static final String RACE_COLUMN_DESCRIPTION = "racadescricao";
 
+    public static final String FEATPOINTS_TABLE_NAME = "pontostalento";
+    public static final String FEATPOINTS_COMBAT = "pontostalentocombate";
+    public static final String FEATPOINTS_MAGIC = "pontostalentomagia";
+    public static final String FEATPOINTS_SKILL = "pontostalentopericia";
+    public static final String FEATPOINTS_DIVINE = "pontostalentodivino";
+    public static final String FEATPOINTS_TORMENTA = "pontostalentotormenta";
+    public static final String FEATPOINTS_GENERAL = "pontostalentogeral";
+    public static final String FEATPOINTS_CHARID = "pontostalentochar";
+
     public static final String FEAT_TABLE_NAME = "talentos";
     public static final String FEAT_COLUMN_ID = "talentoid";
     public static final String FEAT_COLUMN_NAME = "talentonome";
@@ -93,7 +102,7 @@ public class DBHelper extends SQLiteOpenHelper{
     public static final String ARMOR_TABLE_NAME = "armaduras";
     public static final String ARMOR_COLUMN_NAME = "armaduranome";
     public static final String ARMOR_COLUMN_ID = "armaduraid";
-    public static final String ARMOR_COLUMN_TYPE = "armaduraid";
+    public static final String ARMOR_COLUMN_TYPE = "armaduratipo";
     public static final String ARMOR_COLUMN_CA = "armaduraca";
     public static final String ARMOR_COLUMN_BMD = "armadurabmd";
     public static final String ARMOR_COLUMN_PA = "armadurapen";
@@ -192,10 +201,6 @@ public class DBHelper extends SQLiteOpenHelper{
                         "(armaduraid integer primary key, armaduranome text, armaduratipo integer, armaduraca integer, armadurabmd text, armadurapen integer)"
         );
 
-        db.execSQL(
-                "create table " + ABILITY_TABLE_NAME +
-                        "(habilidadeid integer primary key, habilidadenome text, habilidadevalor integer)"
-        );
 
         db.execSQL(
                 "create table " + CHARFEAT_REL_NAME  +
@@ -214,6 +219,11 @@ public class DBHelper extends SQLiteOpenHelper{
                 "create table " + CHARABILITY_REL_NAME  +
                         "(relaccharabchar integer, relaccharabab integer, relaccharabaux integer, foreign key(relaccharabchar) references personagens(id), foreign key(relaccharabab) references habilidades(habilidadeid))"
         );
+        db.execSQL(
+                "create table " + FEATPOINTS_TABLE_NAME +
+                        "(pontostalentogeral integer, pontostalentocombate integer, pontostalentomagia integer, pontostalentopericia integer, pontostalentodivino integer, pontostalentotormenta integer, pontostalentochar integer, foreign key(pontostalentochar) references personagens(id))"
+        );
+
     }
 
 
