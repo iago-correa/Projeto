@@ -63,6 +63,7 @@ public class DBHelper extends SQLiteOpenHelper{
     public static final String FEAT_TABLE_NAME = "talentos";
     public static final String FEAT_COLUMN_ID = "talentoid";
     public static final String FEAT_COLUMN_NAME = "talentonome";
+    public static final String FEAT_COLUMN_TYPE = "talentotipo";
     public static final String FEAT_COLUMN_REPEAT = "talentorep";
     public static final String FEAT_COLUMN_ACT = "talentoact";
 
@@ -200,7 +201,6 @@ public class DBHelper extends SQLiteOpenHelper{
                 "create table " + ARMOR_TABLE_NAME +
                         "(armaduraid integer primary key, armaduranome text, armaduratipo integer, armaduraca integer, armadurabmd text, armadurapen integer)"
         );
-
 
         db.execSQL(
                 "create table " + CHARFEAT_REL_NAME  +
@@ -370,59 +370,112 @@ public class DBHelper extends SQLiteOpenHelper{
 
     public boolean featPrereq(int charid, int featid) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String type, esp;
-        int[] value = new int[6];
-        Cursor res = db.rawQuery("select * from " + CHAR_TABLE_NAME + "where" + CHAR_COLUMN_ID + "=" +charid+ "", null);
-        value[0] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_FOR));
-        value[1] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_DES));
-        value[2] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_CON));
-        value[3] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_INT));
-        value[4] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_SAB));
-        value[5] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_CAR));
+        String featype, type, esp;
         boolean answer = true;
-        res = db.rawQuery("select * from " + PREREQ_TABLE_NAME + " where " + PREREQ_COLUMN_FID + "=" +featid+ "", null);
-        if (res != null) {
-            res.moveToFirst();
-            while (res.isAfterLast() == false) {
-                type = res.getString(res.getColumnIndex(PREREQ_COLUMN_TYPE));
-                if (type == "Atributo") {
-                    esp = res.getString(res.getColumnIndex(PREREQ_COLUMN_EXTRA));
-                    if (esp == "FOR")
-                        if (value[0] < res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE)))
+        int[] value = new int[6];
+        Cursor res = getData("talento",featid);
+        featype = res.getString(res.getColumnIndex(FEAT_COLUMN_TYPE));
+        int pontos = featPoints(featype,charid);
+        if ((pontos > 0) || (featPoints("Geral",charid) > 0)) {
+            res = db.rawQuery("select * from " + CHAR_TABLE_NAME + "where" + CHAR_COLUMN_ID + "=" + charid + "", null);
+            value[0] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_FOR));
+            value[1] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_DES));
+            value[2] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_CON));
+            value[3] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_INT));
+            value[4] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_SAB));
+            value[5] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_CAR));
+
+            res = db.rawQuery("select * from " + PREREQ_TABLE_NAME + " where " + PREREQ_COLUMN_FID + "=" + featid + "", null);
+            if (res != null) {
+                res.moveToFirst();
+                while (res.isAfterLast() == false) {
+                    type = res.getString(res.getColumnIndex(PREREQ_COLUMN_TYPE));
+                    if (type == "Atributo") {
+                        esp = res.getString(res.getColumnIndex(PREREQ_COLUMN_EXTRA));
+                        if (esp == "FOR")
+                            if (value[0] < res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE)))
+                                answer = false;
+                            else ;
+                        else if (esp == "DES")
+                            if (value[1] < res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE)))
+                                answer = false;
+                            else ;
+                        else if (esp == "CON")
+                            if (value[2] < res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE)))
+                                answer = false;
+                            else ;
+                        else if (esp == "INT")
+                            if (value[3] < res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE)))
+                                answer = false;
+                            else ;
+                        else if (esp == "SAB")
+                            if (value[4] < res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE)))
+                                answer = false;
+                            else ;
+                        else if (esp == "CAR")
+                            if (value[5] < res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE)))
+                                answer = false;
+                            else ;
+                    } else if (type == "Talento") {
+                        if (hasFeat(charid, res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE))) == null)
                             answer = false;
-                        else;
-                    else if (esp == "DES")
-                        if (value[1] < res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE)))
+                    } else if (type == "BBA") {
+                        if (BBA(charid) < res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE)))
                             answer = false;
-                        else;
-                    else if (esp == "CON")
-                        if (value[2] < res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE)))
-                            answer = false;
-                        else;
-                    else if (esp == "INT")
-                        if (value[3] < res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE)))
-                            answer = false;
-                        else;
-                    else if (esp == "SAB")
-                        if (value[4] < res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE)))
-                            answer = false;
-                        else;
-                    else if (esp == "CAR")
-                        if (value[5] < res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE)))
-                            answer = false;
-                        else;
-                } else if (type == "Talento") {
-                    if (hasFeat(charid, res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE))) == null)
-                        answer = false;
+                    }
+                    res.moveToNext();
                 }
-                res.moveToNext();
             }
-        }
+        } else
+            answer = false;
         return answer;
+    }
+
+    public int featPoints (String feat, int charid) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String type = "";
+        if (feat == "Combate")
+            type = FEATPOINTS_COMBAT;
+        else if (feat == "Magia")
+            type = FEATPOINTS_MAGIC;
+        else if (feat == "Perícia")
+            type = FEATPOINTS_SKILL;
+        else if (feat == "Poder Concedido")
+            type = FEATPOINTS_DIVINE;
+        else if (feat == "Tormenta")
+            type = FEATPOINTS_TORMENTA;
+        else
+            type = FEATPOINTS_GENERAL;
+        Cursor res = db.rawQuery("select * from " + FEATPOINTS_TABLE_NAME + " where " + FEATPOINTS_CHARID + "=" +charid+ "", null);
+        int answer = res.getInt(res.getColumnIndex(type));
+        return answer;
+    }
+
+    public boolean featPointTaken (String feat, int charid) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String type = "";
+        if (feat == "Combate")
+            type = FEATPOINTS_COMBAT;
+        else if (feat == "Magia")
+            type = FEATPOINTS_MAGIC;
+        else if (feat == "Perícia")
+            type = FEATPOINTS_SKILL;
+        else if (feat == "Poder Concedido")
+            type = FEATPOINTS_DIVINE;
+        else if (feat == "Tormenta")
+            type = FEATPOINTS_TORMENTA;
+        else
+            type = FEATPOINTS_GENERAL;
+        int points = featPoints(feat,charid) - 1;
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(type, points);
+        db.update(FEATPOINTS_TABLE_NAME, contentValues, FEATPOINTS_CHARID + " = ?", new String[]{Integer.toString(charid)});
+        return true;
     }
 
     public boolean featBuy (int charid, int featid, int aux) {
         SQLiteDatabase db = this.getReadableDatabase();
+        String type = "";
         Cursor res = hasFeat(charid,featid);
         ContentValues contentValues = new ContentValues();
         contentValues.put(CHARFEAT_CHAR_ID, charid);
@@ -435,6 +488,12 @@ public class DBHelper extends SQLiteOpenHelper{
             contentValues.put(CHARFEAT_TIMES, 1);
             db.insert(CHARFEAT_REL_NAME, null, contentValues);
         }
+        res = getData("Talento",featid);
+        type = res.getString(res.getColumnIndex(FEAT_COLUMN_TYPE));
+        if (featPoints(type,charid) > 0)
+            featPointTaken(type, charid);
+        else
+            featPointTaken("Geral",charid);
         return true;
     }
 
@@ -750,6 +809,28 @@ public class DBHelper extends SQLiteOpenHelper{
         else
             bonus = 0;
         return bonus;
+    }
+
+    public int pontosPericia (int charid) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        int pontos = 0;
+        Cursor res = getData("personagem",charid);
+        if (res.getInt(res.getColumnIndex("racaid")) == 5)
+            pontos += 2;
+        res = getData("classe",res.getInt(res.getColumnIndex("primclasse")));
+        pontos += res.getInt(res.getColumnIndex("perclasse"));
+        pontos += mod(charid,"INT");
+        res = db.rawQuery("select * from " +CHARSKILL_REL_NAME + "", null);
+        if (res != null) {
+            res.moveToFirst();
+            while (res.isAfterLast() == false) {
+                if (res.getInt(res.getColumnIndex(CHARSKILL_CHAR_ID)) == charid)
+                    pontos--;
+                res.moveToNext();
+            }
+        }
+        return pontos;
+
     }
 
     public boolean raceUpdate (int charid) {
