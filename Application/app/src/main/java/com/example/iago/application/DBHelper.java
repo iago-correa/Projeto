@@ -412,6 +412,8 @@ public class DBHelper extends SQLiteOpenHelper{
         if (level == 1)
             contentValues.put(CHAR_COLUMN_FCLASS, classid);
         db.update(CHAR_TABLE_NAME, contentValues, "id = ? ", new String[] { Integer.toString(charid) } );
+        if (level % 2 == 1)
+            featPointChange("Geral",charid,1);
         return true;
     }
 
@@ -498,7 +500,7 @@ public class DBHelper extends SQLiteOpenHelper{
         return answer;
     }
 
-    public boolean featPointTaken (String feat, int charid) {
+    public boolean featPointChange (String feat, int charid, int value) {
         SQLiteDatabase db = this.getReadableDatabase();
         String type = "";
         if (feat == "Combate")
@@ -513,7 +515,7 @@ public class DBHelper extends SQLiteOpenHelper{
             type = FEATPOINTS_TORMENTA;
         else
             type = FEATPOINTS_GENERAL;
-        int points = featPoints(feat,charid) - 1;
+        int points = featPoints(feat,charid) + value;
         ContentValues contentValues = new ContentValues();
         contentValues.put(type, points);
         db.update(FEATPOINTS_TABLE_NAME, contentValues, FEATPOINTS_CHARID + " = ?", new String[]{Integer.toString(charid)});
@@ -538,9 +540,9 @@ public class DBHelper extends SQLiteOpenHelper{
         res = getData("Talento",featid);
         type = res.getString(res.getColumnIndex(FEAT_COLUMN_TYPE));
         if (featPoints(type,charid) > 0)
-            featPointTaken(type, charid);
+            featPointChange(type, charid,-1);
         else
-            featPointTaken("Geral",charid);
+            featPointChange("Geral",charid,-1);
         return true;
     }
 
@@ -718,6 +720,39 @@ public class DBHelper extends SQLiteOpenHelper{
         if (hasFeat(charid,17)!=null)
             CA++;
         return CA;
+    }
+
+    public int Fort (int charid) {
+        int fort = 0;
+        Cursor res = getData("personagem",charid);
+        fort += (int)(res.getInt(res.getColumnIndex("nivel"))/2);
+        fort += mod(charid,"CON");
+        res = hasFeat(charid, 130);
+        if (res != null)
+            fort += 2*res.getInt(res.getColumnIndex(CHARFEAT_TIMES));
+        return fort;
+    }
+
+    public int Ref (int charid) {
+        int ref = 0;
+        Cursor res = getData("personagem",charid);
+        ref += (int)(res.getInt(res.getColumnIndex("nivel"))/2);
+        ref += mod(charid,"DES");
+        res = hasFeat(charid, 133);
+        if (res != null)
+            ref += 2*res.getInt(res.getColumnIndex(CHARFEAT_TIMES));
+        return ref;
+    }
+
+    public int Von (int charid) {
+        int von = 0;
+        Cursor res = getData("personagem",charid);
+        von += (int)(res.getInt(res.getColumnIndex("nivel"))/2);
+        von += mod(charid,"DES");
+        res = hasFeat(charid, 133);
+        if (res != null)
+            von += 2*res.getInt(res.getColumnIndex(CHARFEAT_TIMES));
+        return von;
     }
 
     public int BBA (int charid) {
