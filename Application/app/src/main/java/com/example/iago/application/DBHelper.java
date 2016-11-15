@@ -332,15 +332,15 @@ public class DBHelper extends SQLiteOpenHelper{
         return res;
     }
 
-    public String getDescr(int id, String table) {
+    public String getDescr(String nome, String table) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = null;
         String desc;
         if (table == "classe") {
-            res = db.rawQuery("select * from classes where id=" + id + "", null);
+            res = db.rawQuery("select * from classes where nome=" + nome + "", null);
             desc = res.getString(res.getColumnIndex(DBHelper.CLASS_COLUMN_DESCRIPTION));
         } else if (table == "raca") {
-            res = db.rawQuery("select * from racas where id=" + id + "", null);
+            res = db.rawQuery("select * from racas where id=" + nome + "", null);
             desc = res.getString(res.getColumnIndex(DBHelper.RACE_COLUMN_DESCRIPTION));
         }
         else
