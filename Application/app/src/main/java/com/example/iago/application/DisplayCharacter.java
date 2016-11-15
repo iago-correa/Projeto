@@ -2,6 +2,8 @@ package com.example.iago.application;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
@@ -33,7 +36,6 @@ public class DisplayCharacter extends AppCompatActivity {
         mydb.inicializaDB();
 
         ArrayList classes = mydb.getAll("classes");
-
 
         for(int i=0;i<classes.size();i++) {
 
@@ -84,6 +86,35 @@ public class DisplayCharacter extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options_character, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        Intent intent = null;
+
+        switch (item.getItemId()) {
+            case R.id.actionHabilidades:
+                intent = new Intent(getApplicationContext(), DisplayHabilidades.class);
+                startActivity(intent);
+                return true;
+
+            case R.id.actionPerícias:
+                intent = new Intent(getApplicationContext(), DisplayPericias.class);
+                startActivity(intent);
+                return true;
+
+            case R.id.actionAtaques:
+                intent = new Intent(getApplicationContext(), DisplayAtaques.class);
+                startActivity(intent);
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
     }
 
 }

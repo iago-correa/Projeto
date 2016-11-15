@@ -18,6 +18,9 @@
         <activity android:name="com.example.iago.application.DisplayCharacters" />
         <activity android:name="com.example.iago.application.CreateCharacter1" />
         <activity android:name="com.example.iago.application.DisplayCharacter" />
+        <activity android:name="com.example.iago.application.DisplayHabilidades" />
+        <activity android:name="com.example.iago.application.DisplayPericias" />
+        <activity android:name="com.example.iago.application.DisplayAtaques" />
     </application>
 
 </manifest>
