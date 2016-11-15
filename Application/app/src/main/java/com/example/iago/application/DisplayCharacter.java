@@ -3,7 +3,12 @@ package com.example.iago.application;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.ArrayAdapter;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
@@ -13,7 +18,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class DisplayCharacter extends Activity {
+public class DisplayCharacter extends AppCompatActivity {
 
     private DBHelper mydb;
 
@@ -72,6 +77,13 @@ public class DisplayCharacter extends Activity {
 
         }
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options_character, menu);
+        return true;
     }
 
 }

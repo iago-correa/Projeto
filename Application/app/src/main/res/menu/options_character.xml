@@ -1,0 +1,32 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/actionWeapon"
+        android:icon="@drawable/weapon"
+        android:title="Arma"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/actionArmor"
+        android:icon="@drawable/armor"
+        android:title="Armadura"
+        app:showAsAction="always"/>
+
+    <item android:id="@+id/actionPerícias"
+        android:title="Perícias"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/actionAtaques"
+        android:title="Ataques"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/actionHabilidades"
+        android:title="Habilidades"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/actionTalentos"
+        android:title="Talentos"
+        app:showAsAction="never"/>
+
+</menu>
