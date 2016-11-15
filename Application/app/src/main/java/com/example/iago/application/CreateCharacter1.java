@@ -60,10 +60,11 @@ public class CreateCharacter1 extends Activity {
         buttonInfoClass.setOnClickListener(new  View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder1 = new AlertDialog.Builder(getBaseContext());
-                String nome = (String)spinner.getSelectedItem();
+                //AlertDialog.Builder builder1 = new AlertDialog.Builder(getBaseContext());
+                String nome = (String)spinner2.getSelectedItem();
                 String desc = mydb.getDescr(nome,"classe");
-                builder1.setMessage(desc);
+                buttonCreate.setText(desc);
+               /* builder1.setMessage(desc);
                 builder1.setCancelable(true);
 
                 builder1.setPositiveButton(
@@ -75,7 +76,7 @@ public class CreateCharacter1 extends Activity {
                         });
 
                 AlertDialog alert11 = builder1.create();
-                alert11.show();
+                alert11.show();*/
             }
         });
 
