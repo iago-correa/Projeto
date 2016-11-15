@@ -336,16 +336,37 @@ public class DBHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = null;
         String desc;
+        ArrayList<String> saida = new ArrayList<String>();
         if (table == "classe") {
-            res = db.rawQuery("select classdescricao from classes where classnome='" + nome + "'", null);
-            desc = res.getString(res.getColumnIndex(DBHelper.CLASS_COLUMN_DESCRIPTION));
+            res = db.rawQuery("select classdescricao from classes where "+DBHelper.CLASS_COLUMN_NAME+" LIKE '" + nome + "'", null);
+            if(res != null){
+                res.moveToFirst();
+                while (res.isAfterLast() == false) {
+                    saida.add(res.getString(res.getColumnIndex(DBHelper.CLASS_COLUMN_DESCRIPTION)));
+                    res.moveToNext();
+                }
+                desc = saida.toString().substring(1,saida.toString().length()-1);
+                return desc;
+            }else{
+                return "Nada encontrado";
+            }
         } else if (table == "raca") {
-            res = db.rawQuery("select racadescricao from racas where racanome=" + nome + "", null);
-            desc = res.getString(res.getColumnIndex(DBHelper.RACE_COLUMN_DESCRIPTION));
+            res = db.rawQuery("select racadescricao from racas where "+DBHelper.RACE_COLUMN_NAME+" LIKE '" + nome + "'", null);
+            if(res != null){
+                res.moveToFirst();
+                while (res.isAfterLast() == false) {
+                    saida.add(res.getString(res.getColumnIndex(DBHelper.RACE_COLUMN_DESCRIPTION)));
+                    res.moveToNext();
+                }
+                desc = saida.toString().substring(1,saida.toString().length()-1);
+                return desc;
+            }else{
+                return "Nada encontrado";
+            }
         }
-        else
-            desc = "ERRO: Descrição não-encontrada.";
-        return desc;
+
+        return "Tabela não encontrada";
+
     }
 
     public int mod (int charid, String atributo) {
