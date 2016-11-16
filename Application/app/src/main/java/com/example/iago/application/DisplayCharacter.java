@@ -14,6 +14,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewDebug;
 import android.widget.ArrayAdapter;
 import android.widget.GridLayout;
@@ -28,7 +29,8 @@ import java.util.ArrayList;
 public class DisplayCharacter extends AppCompatActivity {
 
     private DBHelper mydb;
-
+    int charid = 0;
+    int i = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -38,10 +40,70 @@ public class DisplayCharacter extends AppCompatActivity {
         mydb = new DBHelper(this);
 
         Bundle extras = getIntent().getExtras();
-        int charid = 0;
         if(extras != null) {
             charid = (int)extras.getSerializable("charid");
         }
+
+        View.OnClickListener LevelUpButton = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int classe = (Integer)(v.getTag());
+                if (classe == 14)
+                    classe = 1;
+                mydb.levelUp(charid, classe);
+                textupdate();
+            }
+        };
+
+        textupdate();
+        ArrayList classes = mydb.getAll("classes");
+        for(i=0;i<classes.size();i++) {
+            TextView tv1 = new TextView(this);
+            tv1.setTextSize(25);
+            tv1.setText((String) classes.get(i));
+            GridLayout gl = (GridLayout) findViewById(R.id.gridClasses);
+            gl.addView(tv1,0);
+            GridLayout.LayoutParams param =new GridLayout.LayoutParams();
+            param.height = GridLayout.LayoutParams.WRAP_CONTENT;
+            param.width = GridLayout.LayoutParams.WRAP_CONTENT;
+            param.setGravity(Gravity.CENTER_VERTICAL);
+            param.columnSpec = GridLayout.spec(0);
+            param.rowSpec = GridLayout.spec(i);
+            tv1.setLayoutParams(param);
+
+            TextView tv2 = new TextView(this);
+            tv2.setTextSize(20);
+            tv2.setTag(i    );
+            tv2.setText(Integer.toString(mydb.getClassLevel(charid,i+1)));
+            gl.addView(tv2,0);
+            GridLayout.LayoutParams param2 =new GridLayout.LayoutParams();
+            param2.height = GridLayout.LayoutParams.WRAP_CONTENT;
+            param2.width = GridLayout.LayoutParams.WRAP_CONTENT;
+            param2.setGravity(Gravity.CENTER_VERTICAL);
+            param2.columnSpec = GridLayout.spec(1);
+            param2.rowSpec = GridLayout.spec(i);
+            //param2.setMarginStart(10);
+            tv2.setLayoutParams (param2);
+
+            final ImageButton ib = new ImageButton(this);
+            ib.setTag(i+2);
+            ib.setOnClickListener(LevelUpButton);
+            ib.setBackgroundResource(R.drawable.roundedbutton);
+            ib.setImageResource(R.drawable.plus);
+            gl.addView(ib,0);
+            GridLayout.LayoutParams param3 =new GridLayout.LayoutParams();
+            param3.setGravity(Gravity.CENTER_VERTICAL);
+            //param3.setMarginStart(10);
+            param3.height = 35;
+            param3.width = 35;
+            param3.columnSpec = GridLayout.spec(2);
+            ib.setLayoutParams (param3);
+
+        }
+
+    }
+
+    void textupdate () {
 
         Cursor res = mydb.getData("personagem",charid);
 
@@ -63,7 +125,7 @@ public class DisplayCharacter extends AppCompatActivity {
         }
 
         TextView textName = (TextView)findViewById(R.id.textName);
-        textName.setText(nomeChar);
+        textName.setText((Integer.toString(mydb.getClassLevel(charid,1))));
 
         TextView textRaca = (TextView)findViewById(R.id.textRaca);
         textRaca.setText(mydb.getName("raca",racaid));
@@ -103,53 +165,7 @@ public class DisplayCharacter extends AppCompatActivity {
 
         TextView textValueCAR = (TextView)findViewById(R.id.textValueCAR);
         textValueCAR.setText(Integer.toString(value[5]));
-
-        ArrayList classes = mydb.getAll("classes");
-
-        for(int i=0;i<classes.size();i++) {
-
-            TextView tv1 = new TextView(this);
-            tv1.setTextSize(25);
-            tv1.setText((String) classes.get(i));
-            GridLayout gl = (GridLayout) findViewById(R.id.gridClasses);
-            gl.addView(tv1,0);
-            GridLayout.LayoutParams param =new GridLayout.LayoutParams();
-            param.height = GridLayout.LayoutParams.WRAP_CONTENT;
-            param.width = GridLayout.LayoutParams.WRAP_CONTENT;
-            param.setGravity(Gravity.CENTER_VERTICAL);
-            param.columnSpec = GridLayout.spec(0);
-            param.rowSpec = GridLayout.spec(i);
-            tv1.setLayoutParams(param);
-
-            TextView tv2 = new TextView(this);
-            tv2.setTextSize(20);
-            tv2.setText(Integer.toString(mydb.getClassLevel(charid,i+1)));
-            gl.addView(tv2,0);
-            GridLayout.LayoutParams param2 =new GridLayout.LayoutParams();
-            param2.height = GridLayout.LayoutParams.WRAP_CONTENT;
-            param2.width = GridLayout.LayoutParams.WRAP_CONTENT;
-            param2.setGravity(Gravity.CENTER_VERTICAL);
-            param2.columnSpec = GridLayout.spec(1);
-            param2.rowSpec = GridLayout.spec(i);
-            //param2.setMarginStart(10);
-            tv2.setLayoutParams (param2);
-
-            ImageButton ib = new ImageButton(this);
-            ib.setBackgroundResource(R.drawable.roundedbutton);
-            ib.setImageResource(R.drawable.plus);
-            gl.addView(ib,0);
-            GridLayout.LayoutParams param3 =new GridLayout.LayoutParams();
-            param3.setGravity(Gravity.CENTER_VERTICAL);
-            //param3.setMarginStart(10);
-            param3.height = 35;
-            param3.width = 35;
-            param3.columnSpec = GridLayout.spec(2);
-            ib.setLayoutParams (param3);
-
-        }
-
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
