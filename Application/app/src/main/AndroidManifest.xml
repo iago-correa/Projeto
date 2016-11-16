@@ -21,6 +21,7 @@
         <activity android:name="com.example.iago.application.DisplayHabilidades" />
         <activity android:name="com.example.iago.application.DisplayPericias" />
         <activity android:name="com.example.iago.application.DisplayAtaques" />
+        <activity android:name="com.example.iago.application.DisplayTalentos" />
     </application>
 
 </manifest>

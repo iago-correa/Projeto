@@ -60,6 +60,8 @@ public class DisplayCharacter extends AppCompatActivity {
             }
         };
 
+        textupdate();
+
         ArrayList classes = mydb.getAll("classes");
         for(i=0;i<classes.size();i++) {
             TextView tv1 = new TextView(this);
@@ -129,7 +131,7 @@ public class DisplayCharacter extends AppCompatActivity {
         }
 
         TextView textName = (TextView)findViewById(R.id.textName);
-        textName.setText((Integer.toString(mydb.getClassLevel(charid,1))));
+        textName.setText(nomeChar);
 
         TextView textRaca = (TextView)findViewById(R.id.textRaca);
         textRaca.setText(mydb.getName("raca",racaid));

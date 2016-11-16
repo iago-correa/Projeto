@@ -1130,7 +1130,7 @@ public class DBHelper extends SQLiteOpenHelper {
         ArrayList<String> array_list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         String column = null;
-        Cursor res = db.rawQuery("select * from talentos where " + FEAT_COLUMN_TYPE + " = " + table + "", null);
+        Cursor res = db.rawQuery("select * from talentos where " + FEAT_COLUMN_TYPE + " LIKE '" + table + "'", null);
         if (res != null) {
             res.moveToFirst();
             while (res.isAfterLast() == false) {
@@ -1184,7 +1184,7 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         int pontos = featPoints(featype, charid);
         if ((pontos > 0) || (featPoints("Geral", charid) > 0)) {
-            res = db.rawQuery("select * from " + CHAR_TABLE_NAME + "where" + CHAR_COLUMN_ID + "=" + charid + "", null);
+            res = db.rawQuery("select * from " + CHAR_TABLE_NAME + " where " + CHAR_COLUMN_ID + " = " + charid + "", null);
             res.moveToFirst();
             while (res.isAfterLast() == false) {
                 value[0] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_FOR));
@@ -1264,7 +1264,7 @@ public class DBHelper extends SQLiteOpenHelper {
             contentValues.put(CHARFEAT_TIMES, 1);
             db.insert(CHARFEAT_REL_NAME, null, contentValues);
         }
-        res = getData("Talento", featid);
+        res = getData("talento", featid);
         res.moveToFirst();
         while (res.isAfterLast() == false) {
             type = res.getString(res.getColumnIndex(FEAT_COLUMN_TYPE));
