@@ -7,9 +7,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -40,7 +42,7 @@ public class DisplayCharacters extends Activity {
         }
 
 
-        ArrayList personagens = mydb.getAll("personagens");
+        final ArrayList personagens = mydb.getAll("personagens");
         final ArrayList personagensId = mydb.getAllId("personagens");
 
         ArrayAdapter<String> myAdapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, personagens);
@@ -56,21 +58,22 @@ public class DisplayCharacters extends Activity {
             }
         });
 
-        myList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        myList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getApplicationContext(), DisplayCharacter.class);
-                int charid = (int)personagensId.get((int)myList.getSelectedItemId());
+                int charid = 0;
+                String nomeSele = (String)((TextView) view).getText();
+                for(int i=0;i<personagens.size();i++){
+                    if(personagens.get(i).equals(nomeSele)){
+                        charid = Integer.parseInt((String)personagensId.get(i));
+                    }
+                }
                 intent.putExtra("charid", charid);
                 startActivity(intent);
             }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-
         });
+
 
     }
 
