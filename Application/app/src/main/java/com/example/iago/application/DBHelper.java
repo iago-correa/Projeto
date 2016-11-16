@@ -380,7 +380,7 @@ public class DBHelper extends SQLiteOpenHelper{
         if(res != null){
             res.moveToFirst();
             while (res.isAfterLast() == false) {
-                level = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_ID));
+                level = res.getInt(res.getColumnIndex(DBHelper.CHARCLASSE_NÍVEL));
                 res.moveToNext();
             }
         }
@@ -600,25 +600,41 @@ public class DBHelper extends SQLiteOpenHelper{
     public Cursor hasFeat (int charid, int featid) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("select * from " + CHARFEAT_REL_NAME + " where " + CHARFEAT_CHAR_ID + "=" +charid+ " and " + CHARFEAT_FEAT_ID + "=" +featid+ "", null);
-        return res;
+        res.moveToFirst();
+        if (res.getCount() > 0)
+            return res;
+        else
+            return null;
     }
 
     public Cursor hasAbility (int charid, int abilityid) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("select * from " + CHARABILITY_REL_NAME + " where " + CHARABILITY_CHAR_ID + "=" +charid+ " and " + CHARABILITY_SKILL_ID+ "=" +abilityid+ "", null);
-        return res;
+        res.moveToFirst();
+        if (res.getCount() > 0)
+            return res;
+        else
+            return null;
     }
 
     public Cursor hasSkill (int charid, int skillid) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("select * from " + CHARSKILL_REL_NAME + " where " + CHARSKILL_CHAR_ID + "=" +charid+ " and " + CHARSKILL_SKILL_ID + "=" +skillid+ "", null);
-        return res;
+        res.moveToFirst();
+        if (res.getCount() > 0)
+            return res;
+        else
+            return null;
     }
 
     public Cursor hasArmor (int charid) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("select * from " + SPECARMOR_TABLE_NAME + " where " + SPECARMOR_CHAR_ID + "=" +charid+ "", null);
-        return res;
+        res.moveToFirst();
+        if (res.getCount() > 0)
+            return res;
+        else
+            return null;
     }
 
     public String getDescr(String nome, String table) {
@@ -714,6 +730,7 @@ public class DBHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res =  db.rawQuery( "select * from personagens where id="+charid+"", null );
         Integer value;
+        res.moveToFirst();
         if (atributo == "FOR")
             value = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_FOR));
         else if (atributo == "DES")
@@ -733,11 +750,11 @@ public class DBHelper extends SQLiteOpenHelper{
 
     public int CA (int charid) {
         int CA = 10;
-        int aux, aux2 = mod(charid, "DES");
+        int aux = 0, aux2 = mod(charid, "DES");
         Cursor res = hasArmor(charid);
         if (res==null) {
             CA += aux2;
-            if (hasFeat(charid,18)!=null)
+           if (hasFeat(charid,18)!=null)
                 CA += mod(charid,"CON");
         }
         else {
@@ -748,19 +765,29 @@ public class DBHelper extends SQLiteOpenHelper{
             else
                 CA += aux2;
         }
-        res = getData("personagem",charid);
-        CA += (int)(res.getInt(res.getColumnIndex("nivel"))/2);
+       res = getData("personagem",charid);
+        res.moveToFirst();
+        while (res.isAfterLast() == false) {
+            aux = (int) (res.getInt(res.getColumnIndex("nivel")) / 2);
+            res.moveToNext();
+        }
+        CA += aux;
         if (hasFeat(charid,33)!=null)
-            CA++;
+           CA++;
         if (hasFeat(charid,17)!=null)
-            CA++;
+           CA++;
         return CA;
     }
 
     public int Fort (int charid) {
-        int fort = 0;
+        int aux = 0, fort = 0;
         Cursor res = getData("personagem",charid);
-        fort += (int)(res.getInt(res.getColumnIndex("nivel"))/2);
+        res.moveToFirst();
+        while (res.isAfterLast() == false) {
+            aux = (int) (res.getInt(res.getColumnIndex("nivel")) / 2);
+            res.moveToNext();
+        }
+        fort += aux;
         fort += mod(charid,"CON");
         res = hasFeat(charid, 130);
         if (res != null)
@@ -769,9 +796,14 @@ public class DBHelper extends SQLiteOpenHelper{
     }
 
     public int Ref (int charid) {
-        int ref = 0;
+        int aux = 0, ref = 0;
         Cursor res = getData("personagem",charid);
-        ref += (int)(res.getInt(res.getColumnIndex("nivel"))/2);
+        res.moveToFirst();
+        while (res.isAfterLast() == false) {
+            aux = (int) (res.getInt(res.getColumnIndex("nivel")) / 2);
+            res.moveToNext();
+        }
+        ref += aux;
         ref += mod(charid,"DES");
         res = hasFeat(charid, 133);
         if (res != null)
@@ -780,10 +812,15 @@ public class DBHelper extends SQLiteOpenHelper{
     }
 
     public int Von (int charid) {
-        int von = 0;
+        int aux = 0, von = 0;
         Cursor res = getData("personagem",charid);
-        von += (int)(res.getInt(res.getColumnIndex("nivel"))/2);
-        von += mod(charid,"DES");
+        res.moveToFirst();
+        while (res.isAfterLast() == false) {
+            aux = (int) (res.getInt(res.getColumnIndex("nivel")) / 2);
+            res.moveToNext();
+        }
+        von += aux;
+        von += mod(charid,"SAB");
         res = hasFeat(charid, 133);
         if (res != null)
             von += 2*res.getInt(res.getColumnIndex(CHARFEAT_TIMES));
@@ -799,7 +836,11 @@ public class DBHelper extends SQLiteOpenHelper{
             nível = getClassLevel(charid,i);
             if (nível > 0) {
                 res = getData("classe", i);
-                BBAtype = res.getInt(res.getColumnIndex("bbaclasse"));
+                res.moveToFirst();
+                while (res.isAfterLast() == false) {
+                    BBAtype = res.getInt(res.getColumnIndex("bbaclasse"));
+                    res.moveToNext();
+                }
                 if (BBAtype == 1)
                     BBA += (int) (nível/2);
                 else if (BBAtype == 2)
@@ -813,16 +854,32 @@ public class DBHelper extends SQLiteOpenHelper{
 
     public int PVs (int charid) {
         int PVs = 0;
-        int nível;
+        int aux1 = 0, aux2 = 0, nível;
         Cursor res = getData("personagem",charid);
-        PVs += (res.getInt(res.getColumnIndex("nível"))*res.getInt(res.getColumnIndex("constituição")));
-        res = getData("classe", res.getInt(res.getColumnIndex("primclasse")));
-        PVs += res.getInt(res.getColumnIndex("pvsclasse"))*3;
+        res.moveToFirst();
+        while (res.isAfterLast() == false) {
+            aux1 = (res.getInt(res.getColumnIndex("nivel")));
+            aux2 = res.getInt(res.getColumnIndex("primclasse"));
+            res.moveToNext();
+        }
+        PVs += aux1*mod(charid,"CON");
+        res = getData("classe", aux2);
+        res.moveToFirst();
+        while (res.isAfterLast() == false) {
+            aux1 = res.getInt(res.getColumnIndex("pvsclasse"));
+            res.moveToNext();
+        }
+        PVs += aux1*3;
         for (int i = 1; i < numberOfRows("classe"); i++) {
             nível = getClassLevel(charid,i);
             if (nível > 0) {
                 res = getData("classe", i);
-                PVs += res.getInt(res.getColumnIndex("pvsclasse"));
+                res.moveToFirst();
+                while (res.isAfterLast() == false) {
+                    aux1 = res.getInt(res.getColumnIndex("pvsclasse"));
+                    res.moveToNext();
+                }
+                PVs += aux1;
             }
         }
         return PVs;

@@ -14,6 +14,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.ViewDebug;
 import android.widget.ArrayAdapter;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
@@ -45,16 +46,58 @@ public class DisplayCharacter extends AppCompatActivity {
         Cursor res = mydb.getData("personagem",charid);
 
         String nomeChar = "";
-
+        int[] value = new int [6];
 
         res.moveToFirst();
         while (res.isAfterLast() == false) {
             nomeChar = res.getString(res.getColumnIndex(DBHelper.CHAR_COLUMN_NAME));
+            value[0] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_FOR));
+            value[1] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_DES));
+            value[2] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_CON));
+            value[3] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_INT));
+            value[4] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_SAB));
+            value[5] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_CAR));
             res.moveToNext();
         }
-        
+
         TextView textName = (TextView)findViewById(R.id.textName);
         textName.setText(nomeChar);
+
+        TextView textValuePVs = (TextView)findViewById(R.id.textValuePV);
+        textValuePVs.setText(Integer.toString(mydb.PVs(charid)));
+
+        TextView textValueCA = (TextView)findViewById(R.id.textValueCA);
+        textValueCA.setText(Integer.toString(mydb.CA(charid)));
+
+        TextView textValueBBA = (TextView)findViewById(R.id.textValueBBA);
+        textValueBBA.setText(Integer.toString(mydb.BBA(charid)));
+
+        TextView textValueFort = (TextView)findViewById(R.id.textValueFort);
+        textValueFort.setText(Integer.toString(mydb.Fort(charid)));
+
+        TextView textValueRef = (TextView)findViewById(R.id.textValueRef);
+        textValueRef.setText(Integer.toString(mydb.Ref(charid)));
+
+        TextView textValueVon = (TextView)findViewById(R.id.textValueVon);
+        textValueVon.setText(Integer.toString(mydb.Von(charid)));
+
+        TextView textValueFOR = (TextView)findViewById(R.id.textValueFOR);
+        textValueFOR.setText(Integer.toString(value[0]));
+
+        TextView textValueDES = (TextView)findViewById(R.id.textValueDES);
+        textValueDES.setText(Integer.toString(value[1]));
+
+        TextView textValueCON = (TextView)findViewById(R.id.textValueCON);
+        textValueCON.setText(Integer.toString(value[2]));
+
+        TextView textValueINT = (TextView)findViewById(R.id.textValueINT);
+        textValueINT.setText(Integer.toString(value[3]));
+
+        TextView textValueSAB = (TextView)findViewById(R.id.textValueSAB);
+        textValueSAB.setText(Integer.toString(value[4]));
+
+        TextView textValueCAR = (TextView)findViewById(R.id.textValueCAR);
+        textValueCAR.setText(Integer.toString(value[5]));
 
         ArrayList classes = mydb.getAll("classes");
 
