@@ -675,9 +675,10 @@ public class DBHelper extends SQLiteOpenHelper{
     }
 
     public String getName (String type, int id) {
-        String coluna= "";
+        String coluna= "", nome = "";
         boolean error = false;
         Cursor res = getData(type,id);
+        res.moveToFirst();
         if (type == "talento")
             coluna = "talentonome";
         else if (type == "pericia")
@@ -692,33 +693,40 @@ public class DBHelper extends SQLiteOpenHelper{
             coluna = "armaduranome";
         else
             error = true;
-        if(!error)
-            return res.getString(res.getColumnIndex(coluna));
-        else
+        if(!error) {
+            while (res.isAfterLast() == false) {
+                nome = res.getString(res.getColumnIndex(coluna));
+                res.moveToNext();
+            }
+            return nome;
+
+        } else
             return "";
     }
 
     public String getPrereq (int featid) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String type, prereq = "";
+        String type, extra, value, prereq = "";
         Cursor res = db.rawQuery("select * from " + PREREQ_TABLE_NAME + " where " + PREREQ_COLUMN_FID + "=" +featid+ "", null);
-        if (res != null) {
+        if ((res != null)&&(res.getCount()>0)){
             res.moveToFirst();
             while (res.isAfterLast() == false) {
                 type = res.getString(res.getColumnIndex(PREREQ_COLUMN_TYPE));
+                extra = res.getString(res.getColumnIndex(PREREQ_COLUMN_EXTRA));
+                value =  res.getString(res.getColumnIndex(PREREQ_COLUMN_VALUE));
                 if (type == "Atributo") {
-                    prereq += res.getString(res.getColumnIndex(PREREQ_COLUMN_EXTRA)) + " " + res.getString(res.getColumnIndex(PREREQ_COLUMN_VALUE)) + "; ";
+                    prereq += extra + " " + value + "; ";
                 } else if (type == "Talento") {
-                    prereq += getName("Talento",res.getInt(res.getColumnIndex(PREREQ_COLUMN_VALUE))) + "; ";
+                    prereq += getName("Talento",Integer.parseInt(value)) + "; ";
                 }
                 else if (type == "BBA") {
-                    prereq += "BBA " + res.getString(res.getColumnIndex(PREREQ_COLUMN_VALUE)) + "; ";
+                    prereq += "BBA " + value + "; ";
                 }
                 else if (type == "Classe") {
-                    prereq += res.getString(res.getColumnIndex(PREREQ_COLUMN_EXTRA)) + " de " + res.getString(res.getColumnIndex(PREREQ_COLUMN_VALUE)) + " nível; ";
+                    prereq += extra + " de " + value + " nível; ";
                 }
-                else if ((type == "Perícia")&&((res.getString(res.getColumnIndex(PREREQ_COLUMN_VALUE)))=="1")) {
-                    prereq += "Treinado em " + res.getString(res.getColumnIndex(PREREQ_COLUMN_EXTRA)) + "; ";
+                else if ((type == "Perícia")&&(value=="1")) {
+                    prereq += "Treinado em " + extra + "; ";
                 }
                 res.moveToNext();
             }
@@ -887,13 +895,25 @@ public class DBHelper extends SQLiteOpenHelper{
 
     public int BonusAtaque (String nomearma) {
         SQLiteDatabase db = this.getReadableDatabase();
-        int bonus = 0;
+        int charid = 0, bonus = 0, aux1 = 0, aux2 = 0;
         Cursor res = db.rawQuery( "select * from armaespecifica where armaespecificanome="+nomearma+"", null );
-        int charid = res.getInt(res.getColumnIndex(SPECWEAPON_CHAR_ID));
+        res.moveToFirst();
+        while (res.isAfterLast()==false) {
+            charid = res.getInt(res.getColumnIndex(SPECWEAPON_CHAR_ID));
+            aux1 = res.getInt(res.getColumnIndex(SPECWEAPON_COLUMN_BONUS));
+            aux2 = res.getInt(res.getColumnIndex(SPECWEAPON_COLUMN_BASE));
+            res.moveToNext();
+        }
         bonus += BBA(charid);
-        bonus += res.getInt(res.getColumnIndex(SPECWEAPON_COLUMN_BONUS));
-        res = getData("arma",res.getInt(res.getColumnIndex(SPECWEAPON_COLUMN_BASE)));
-        if ((res.getInt(res.getColumnIndex(WEAPON_COLUMN_HAND))==4) || ((hasFeat(charid,2)!=null)&&((res.getInt(res.getColumnIndex(WEAPON_COLUMN_DES)))>0))) {
+        bonus += aux1;
+        res = getData("arma",aux2);
+        res.moveToFirst();
+        while (res.isAfterLast()==false) {
+            aux1 = res.getInt(res.getColumnIndex(WEAPON_COLUMN_HAND));
+            aux2 = res.getInt(res.getColumnIndex(WEAPON_COLUMN_DES));
+            res.moveToNext();
+        }
+        if ((aux1==4) || ((hasFeat(charid,2)!=null)&&(aux2>0))) {
             bonus += mod(charid, "DES");
         } else
             bonus += mod(charid, "FOR");
@@ -902,29 +922,47 @@ public class DBHelper extends SQLiteOpenHelper{
 
     public String BonusDano (String nomearma) {
         SQLiteDatabase db = this.getReadableDatabase();
-        int bonus = 0;
+        int charid = 0, aux1 = 0, aux2 = 0, bonus = 0;
+        String damage ="";
         Cursor res = db.rawQuery( "select * from armaespecifica where armaespecificanome="+nomearma+"", null );
-        int charid = res.getInt(res.getColumnIndex(SPECWEAPON_CHAR_ID));
-        bonus += res.getInt(res.getColumnIndex(SPECWEAPON_COLUMN_BONUS));
-        res = getData("arma",res.getInt(res.getColumnIndex(SPECWEAPON_COLUMN_BASE)));
-        int hand = res.getInt(res.getColumnIndex(WEAPON_COLUMN_HAND));
-        if ((hand==3)&&(hasFeat(charid,39)!=null)) {
+        res.moveToFirst();
+        while (res.isAfterLast()==false) {
+            charid = res.getInt(res.getColumnIndex(SPECWEAPON_CHAR_ID));
+            aux1 = res.getInt(res.getColumnIndex(SPECWEAPON_COLUMN_BONUS));
+            aux2 = res.getInt(res.getColumnIndex(SPECWEAPON_COLUMN_BASE));
+            res.moveToNext();
+        }
+        bonus += aux1;
+        res = getData("arma",aux2);
+        res.moveToFirst();
+        while (res.isAfterLast()==false) {
+            aux1 = res.getInt(res.getColumnIndex(WEAPON_COLUMN_HAND));
+            aux2 = res.getInt(res.getColumnIndex(WEAPON_COLUMN_DES));
+            damage = res.getString(res.getColumnIndex(WEAPON_COLUMN_DAMAGE));
+            res.moveToNext();
+        }
+        if ((aux1==3)&&(hasFeat(charid,39)!=null)) {
             bonus += 2 * mod(charid, "FOR");
-        } else if ((hand==4)&&(hasFeat(charid,49)!=null)) {
+        } else if ((aux1==4)&&(hasFeat(charid,49)!=null)) {
             bonus += mod(charid, "DES");
         }
-        if (((res.getInt(res.getColumnIndex(WEAPON_COLUMN_DES)))>0)&&(hasFeat(charid,15)!=null)) {
+        if ((aux2>0)&&(hasFeat(charid,15)!=null)) {
             bonus += mod(charid, "INT");
         }
-        String end = (res.getString(res.getColumnIndex(WEAPON_COLUMN_DAMAGE))) + "+" + Integer.toString(bonus);
-        return end;
+        damage += "+" + Integer.toString(bonus);
+        return damage;
     }
 
     public String Crítico (int armaid) {
-        Cursor res = getData("arma",armaid);
+        int margem = 1, mult = 1;
         String result = "";
-        int margem = res.getInt(res.getColumnIndex(WEAPON_COLUMN_CRITICAL));
-        int mult = res.getInt(res.getColumnIndex(WEAPON_COLUMN_CRITICAL));
+        Cursor res = getData("arma",armaid);
+        res.moveToFirst();
+        while (res.isAfterLast()==false) {
+            margem = res.getInt(res.getColumnIndex(WEAPON_COLUMN_CRITICAL));
+            mult = res.getInt(res.getColumnIndex(WEAPON_COLUMN_CRITICAL));
+            res.moveToNext();
+        }
         if (margem == 3)
             result += "18-20";
         else if (margem == 2)
@@ -962,24 +1000,45 @@ public class DBHelper extends SQLiteOpenHelper{
 
     public int periciaBonus (int charid, int periciaid)
     {
-        String att;
-        int bonus = 0, train, pen;
+        String att = "";
+        int aux1 = 0, bonus = 0, train = 0, pen = 0;
         Cursor res = getData("pericia",periciaid);
-        train = res.getInt(res.getColumnIndex("periciatr"));
-        pen = res.getInt(res.getColumnIndex("periciapen"));
-        att = res.getString(res.getColumnIndex("periciatt"));
+        res.moveToFirst();
+        while (res.isAfterLast() == false) {
+            train = res.getInt(res.getColumnIndex(SKILL_COLUMN_TRAIN));
+            pen = res.getInt(res.getColumnIndex(SKILL_COLUMN_ARMOR));
+            att = res.getString(res.getColumnIndex(SKILL_COLUMN_ATT));
+            res.moveToNext();
+        }
         bonus += mod(charid,att);
+
         if (pen > 0) {
             res = hasArmor(charid);
-            if (res != null)
-                res = getData("armadura",res.getInt(res.getColumnIndex("armaduraespecificabase")));
-            bonus = bonus - (res.getInt(res.getColumnIndex("armadurapen")));
+            if (res != null) {
+                res.moveToFirst();
+                while (res.isAfterLast() == false) {
+                    aux1 = res.getInt(res.getColumnIndex(SPECARMOR_COLUMN_BASE));
+                    res.moveToNext();
+                }
+                res = getData("armadura", aux1);
+                res.moveToFirst();
+                while (res.isAfterLast() == false) {
+                    aux1 = res.getInt(res.getColumnIndex(ARMOR_COLUMN_PA));
+                    res.moveToNext();
+                }
+            }
+            bonus = bonus - aux1;
         }
         res = getData("personagem",charid);
+        res.moveToFirst();
+        while (res.isAfterLast() == false) {
+            aux1 = res.getInt(res.getColumnIndex(CHAR_COLUMN_NIVEL));
+            res.moveToNext();
+        }
         if (hasSkill(charid,periciaid) != null)
-            bonus += res.getInt(res.getColumnIndex("nivel"))+3;
+            bonus += aux1+3;
         else if (train == 0)
-            bonus += (int)(res.getInt(res.getColumnIndex("nivel"))/2);
+            bonus += aux1/2;
         else
             bonus = 0;
         return bonus;
@@ -987,12 +1046,23 @@ public class DBHelper extends SQLiteOpenHelper{
 
     public int pontosPericia (int charid) {
         SQLiteDatabase db = this.getReadableDatabase();
-        int pontos = 0;
+        int aux1 = 0, raca = 0, classe = 0, pontos = 0;
         Cursor res = getData("personagem",charid);
-        if (res.getInt(res.getColumnIndex("racaid")) == 5)
+        res.moveToFirst();
+        while (res.isAfterLast() == false) {
+            raca = res.getInt(res.getColumnIndex(CHAR_COLUMN_RAÇA));
+            classe = res.getInt(res.getColumnIndex(CHAR_COLUMN_FCLASS));
+            res.moveToNext();
+        }
+        if (raca == 5)
             pontos += 2;
-        res = getData("classe",res.getInt(res.getColumnIndex("primclasse")));
-        pontos += res.getInt(res.getColumnIndex("perclasse"));
+        res = getData("classe",classe);
+        res.moveToFirst();
+        while (res.isAfterLast() == false) {
+            aux1 = res.getColumnIndex(CLASS_COLUMN_PERÍCIAS);
+            res.moveToNext();
+        }
+        pontos += aux1;
         pontos += mod(charid,"INT");
         res = db.rawQuery("select * from " +CHARSKILL_REL_NAME + "", null);
         if (res != null) {

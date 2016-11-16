@@ -46,11 +46,13 @@ public class DisplayCharacter extends AppCompatActivity {
         Cursor res = mydb.getData("personagem",charid);
 
         String nomeChar = "";
+        int racaid = 0;
         int[] value = new int [6];
 
         res.moveToFirst();
         while (res.isAfterLast() == false) {
             nomeChar = res.getString(res.getColumnIndex(DBHelper.CHAR_COLUMN_NAME));
+            racaid = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_RAÇA));
             value[0] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_FOR));
             value[1] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_DES));
             value[2] = res.getInt(res.getColumnIndex(DBHelper.CHAR_COLUMN_CON));
@@ -62,6 +64,9 @@ public class DisplayCharacter extends AppCompatActivity {
 
         TextView textName = (TextView)findViewById(R.id.textName);
         textName.setText(nomeChar);
+
+        TextView textRaca = (TextView)findViewById(R.id.textRaca);
+        textRaca.setText(mydb.getName("raca",racaid));
 
         TextView textValuePVs = (TextView)findViewById(R.id.textValuePV);
         textValuePVs.setText(Integer.toString(mydb.PVs(charid)));
@@ -118,7 +123,7 @@ public class DisplayCharacter extends AppCompatActivity {
 
             TextView tv2 = new TextView(this);
             tv2.setTextSize(20);
-            tv2.setText("Nivel");
+            tv2.setText(Integer.toString(mydb.getClassLevel(charid,i+1)));
             gl.addView(tv2,0);
             GridLayout.LayoutParams param2 =new GridLayout.LayoutParams();
             param2.height = GridLayout.LayoutParams.WRAP_CONTENT;
