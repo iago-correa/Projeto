@@ -87,6 +87,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String WEAPON_TABLE_NAME = "armas";
     public static final String WEAPON_COLUMN_NAME = "armanome";
     public static final String WEAPON_COLUMN_ID = "armaid";
+    public static final String WEAPON_COLUMN_TYPE = "armatipo";
     public static final String WEAPON_COLUMN_HAND = "armamao";
     public static final String WEAPON_COLUMN_DAMAGE = "armadano";
     public static final String WEAPON_COLUMN_CRITICAL = "armacrit";
@@ -1077,6 +1078,9 @@ public class DBHelper extends SQLiteOpenHelper {
         } else if (table == "talentos") {
             res = db.rawQuery("select * from talentos", null);
             column = FEAT_COLUMN_NAME;
+        } else if (table == "habilidades") {
+            res = db.rawQuery("select * from habilidades", null);
+            column = ABILITY_COLUMN_NAME;
         }
         if (res != null) {
             res.moveToFirst();
@@ -1108,6 +1112,9 @@ public class DBHelper extends SQLiteOpenHelper {
         } else if (table == "talentos") {
             res = db.rawQuery("select * from talentos", null);
             column = FEAT_COLUMN_ID;
+        } else if (table == "habilidades") {
+            res = db.rawQuery("select * from habilidades", null);
+            column = ABILITY_COLUMN_ID;
         }
         if (res != null) {
             res.moveToFirst();
@@ -1316,4 +1323,26 @@ public class DBHelper extends SQLiteOpenHelper {
         db.update(FEATPOINTS_TABLE_NAME, contentValues, FEATPOINTS_CHARID + " = ?", new String[]{Integer.toString(charid)});
         return true;
     }
+
+    public ArrayList<String> getAllWeaponsId(int charid) {
+        ArrayList<String> array_list = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        int column = 0;
+        Cursor res = db.rawQuery("select * from armas", null);
+        if (res != null) {
+            res.moveToFirst();
+            while (res.isAfterLast() == false) {
+                    column = res.getInt(res.getColumnIndex(WEAPON_COLUMN_TYPE));
+                    if ((column == 1)&&(hasFeat(charid,68)!=null))
+                        array_list.add(res.getString(res.getColumnIndex(FEAT_COLUMN_ID)));
+                    else if ((column == 2)&&(hasFeat(charid,69)!=null))
+                        array_list.add(res.getString(res.getColumnIndex(FEAT_COLUMN_ID)));
+                    else if ((column == 3)&&(hasFeat(charid,70)!=null))
+                        array_list.add(res.getString(res.getColumnIndex(FEAT_COLUMN_ID)));
+                res.moveToNext();
+            }
+        }
+        return array_list;
+    }
+
 }
