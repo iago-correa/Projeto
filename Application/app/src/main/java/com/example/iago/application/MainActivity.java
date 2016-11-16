@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 
@@ -47,6 +48,16 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+        try {
+
+            mydb.openDataBase();
+
+        }catch(SQLException sqle){
+
+            throw sqle;
+
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -54,10 +65,14 @@ public class MainActivity extends AppCompatActivity {
         obj.setOnClickListener(new  View.OnClickListener(){
             @Override
             public void onClick(View v) {
+
                 Intent intent = new Intent(getApplicationContext(),DisplayCharacters.class);
                 startActivity(intent);
+
             }
         });
+
+
 
     }
 }

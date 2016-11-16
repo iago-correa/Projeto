@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -34,25 +35,26 @@ public class DisplayCharacter extends AppCompatActivity {
         setContentView(R.layout.activity_display_character);
 
         mydb = new DBHelper(this);
-        try {
 
-            mydb.inicializaDB();
-
-        } catch (IOException ioe) {
-
-            throw new Error("Unable to create database");
-
+        Bundle extras = getIntent().getExtras();
+        int charid = 0;
+        if(extras != null) {
+            charid = (int)extras.getSerializable("charid");
         }
 
-        try {
+        Cursor res = mydb.getData("personagem",charid);
 
-            mydb.openDataBase();
+        String nomeChar = "";
 
-        }catch(SQLException sqle){
 
-            throw sqle;
-
+        res.moveToFirst();
+        while (res.isAfterLast() == false) {
+            nomeChar = res.getString(res.getColumnIndex(DBHelper.CHAR_COLUMN_NAME));
+            res.moveToNext();
         }
+        
+        TextView textName = (TextView)findViewById(R.id.textName);
+        textName.setText(nomeChar);
 
         ArrayList classes = mydb.getAll("classes");
 
@@ -81,7 +83,7 @@ public class DisplayCharacter extends AppCompatActivity {
             param2.setGravity(Gravity.CENTER_VERTICAL);
             param2.columnSpec = GridLayout.spec(1);
             param2.rowSpec = GridLayout.spec(i);
-            param2.setMarginStart(10);
+            //param2.setMarginStart(10);
             tv2.setLayoutParams (param2);
 
             ImageButton ib = new ImageButton(this);
@@ -90,7 +92,7 @@ public class DisplayCharacter extends AppCompatActivity {
             gl.addView(ib,0);
             GridLayout.LayoutParams param3 =new GridLayout.LayoutParams();
             param3.setGravity(Gravity.CENTER_VERTICAL);
-            param3.setMarginStart(10);
+            //param3.setMarginStart(10);
             param3.height = 35;
             param3.width = 35;
             param3.columnSpec = GridLayout.spec(2);
