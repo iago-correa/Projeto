@@ -23,6 +23,8 @@ import android.widget.Spinner;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -52,10 +54,12 @@ public class DisplayCharacter extends AppCompatActivity {
                     classe = 1;
                 mydb.levelUp(charid, classe);
                 textupdate();
+                Intent intent = new Intent(getApplicationContext(), DisplayTalentos.class);
+                intent.putExtra("charid", charid);
+                startActivity(intent);
             }
         };
 
-        textupdate();
         ArrayList classes = mydb.getAll("classes");
         for(i=0;i<classes.size();i++) {
             TextView tv1 = new TextView(this);
@@ -73,7 +77,7 @@ public class DisplayCharacter extends AppCompatActivity {
 
             TextView tv2 = new TextView(this);
             tv2.setTextSize(20);
-            tv2.setTag(i    );
+            tv2.setTag(i);
             tv2.setText(Integer.toString(mydb.getClassLevel(charid,i+1)));
             gl.addView(tv2,0);
             GridLayout.LayoutParams param2 =new GridLayout.LayoutParams();
@@ -82,7 +86,7 @@ public class DisplayCharacter extends AppCompatActivity {
             param2.setGravity(Gravity.CENTER_VERTICAL);
             param2.columnSpec = GridLayout.spec(1);
             param2.rowSpec = GridLayout.spec(i);
-            //param2.setMarginStart(10);
+            param2.setMarginStart(10);
             tv2.setLayoutParams (param2);
 
             final ImageButton ib = new ImageButton(this);
@@ -93,7 +97,7 @@ public class DisplayCharacter extends AppCompatActivity {
             gl.addView(ib,0);
             GridLayout.LayoutParams param3 =new GridLayout.LayoutParams();
             param3.setGravity(Gravity.CENTER_VERTICAL);
-            //param3.setMarginStart(10);
+            param3.setMarginStart(10);
             param3.height = 35;
             param3.width = 35;
             param3.columnSpec = GridLayout.spec(2);
@@ -165,6 +169,7 @@ public class DisplayCharacter extends AppCompatActivity {
 
         TextView textValueCAR = (TextView)findViewById(R.id.textValueCAR);
         textValueCAR.setText(Integer.toString(value[5]));
+
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -181,16 +186,25 @@ public class DisplayCharacter extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.actionHabilidades:
                 intent = new Intent(getApplicationContext(), DisplayHabilidades.class);
+                intent.putExtra("charid", charid);
                 startActivity(intent);
                 return true;
 
             case R.id.actionPerícias:
                 intent = new Intent(getApplicationContext(), DisplayPericias.class);
+                intent.putExtra("charid", charid);
                 startActivity(intent);
                 return true;
 
             case R.id.actionAtaques:
                 intent = new Intent(getApplicationContext(), DisplayAtaques.class);
+                intent.putExtra("charid", charid);
+                startActivity(intent);
+                return true;
+
+            case R.id.actionTalentos:
+                intent = new Intent(getApplicationContext(), DisplayTalentos.class);
+                intent.putExtra("charid", charid);
                 startActivity(intent);
                 return true;
 

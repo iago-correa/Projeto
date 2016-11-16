@@ -45,21 +45,16 @@
                 android:layout_column="0"
                 android:layout_marginTop="20sp"/>
 
-            <ScrollView
-                android:layout_width="fill_parent"
-                android:layout_height="200sp"
-                android:layout_row="3"
-                android:layout_column="0">
-
                 <GridLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:numColumns="3"
-                    android:id="@+id/gridClasses">
+                    android:id="@+id/gridClasses"
+                    android:layout_row="3"
+                    android:layout_column="0">
 
                 </GridLayout>
 
-            </ScrollView>
 
             <GridLayout
                 android:layout_width="wrap_content"
@@ -70,7 +65,7 @@
                 android:layout_marginTop="20sp">
 
                 <TextView
-                    android:layout_width="60sp"
+                    android:layout_width="55sp"
                     android:layout_height="wrap_content"
                     android:text="PVs"
                     android:id="@+id/textPV"
@@ -89,7 +84,7 @@
                     android:textColor="@color/colorAccent2"/>
 
                 <TextView
-                    android:layout_width="60sp"
+                    android:layout_width="55sp"
                     android:layout_height="wrap_content"
                     android:text="CA"
                     android:id="@+id/textCA"
@@ -108,7 +103,7 @@
                     android:textColor="@color/colorAccent2"/>
 
                 <TextView
-                    android:layout_width="60sp"
+                    android:layout_width="55sp"
                     android:layout_height="wrap_content"
                     android:text="Fort"
                     android:id="@+id/textFort"
@@ -127,7 +122,7 @@
                     android:textColor="@color/colorAccent2"/>
 
                 <TextView
-                    android:layout_width="60sp"
+                    android:layout_width="55sp"
                     android:layout_height="wrap_content"
                     android:text="Ref"
                     android:id="@+id/textRef"
@@ -146,7 +141,7 @@
                     android:textColor="@color/colorAccent2"/>
 
                 <TextView
-                    android:layout_width="60sp"
+                    android:layout_width="55sp"
                     android:layout_height="wrap_content"
                     android:text="Von"
                     android:id="@+id/textVon"
@@ -165,7 +160,7 @@
                     android:textColor="@color/colorAccent2"/>
 
                 <TextView
-                    android:layout_width="60sp"
+                    android:layout_width="55sp"
                     android:layout_height="wrap_content"
                     android:text="PMs"
                     android:id="@+id/textPM"
@@ -184,7 +179,7 @@
                     android:textColor="@color/colorAccent2"/>
 
                 <TextView
-                    android:layout_width="60sp"
+                    android:layout_width="55sp"
                     android:layout_height="wrap_content"
                     android:text="BBA"
                     android:id="@+id/textBBA"
@@ -203,7 +198,7 @@
                     android:textColor="@color/colorAccent2"/>
 
                 <TextView
-                    android:layout_width="60sp"
+                    android:layout_width="55sp"
                     android:layout_height="wrap_content"
                     android:text="FOR"
                     android:id="@+id/textFOR"
@@ -222,7 +217,7 @@
                     android:textColor="@color/colorAccent2"/>
 
                 <TextView
-                    android:layout_width="60sp"
+                    android:layout_width="55sp"
                 android:layout_height="wrap_content"
                 android:text="DES"
                 android:id="@+id/textDES"
@@ -241,7 +236,7 @@
                     android:textColor="@color/colorAccent2"/>
 
                 <TextView
-                    android:layout_width="60sp"
+                    android:layout_width="55sp"
                     android:layout_height="wrap_content"
                     android:text="CON"
                     android:id="@+id/textCON"
@@ -260,7 +255,7 @@
                     android:textColor="@color/colorAccent2"/>
 
                 <TextView
-                    android:layout_width="60sp"
+                    android:layout_width="55sp"
                     android:layout_height="wrap_content"
                     android:text="INT"
                     android:id="@+id/textINT"
@@ -279,7 +274,7 @@
                     android:textColor="@color/colorAccent2"/>
 
                 <TextView
-                    android:layout_width="60sp"
+                    android:layout_width="55sp"
                     android:layout_height="wrap_content"
                     android:text="SAB"
                     android:id="@+id/textSAB"
@@ -298,7 +293,7 @@
                     android:textColor="@color/colorAccent2"/>
 
                 <TextView
-                    android:layout_width="60sp"
+                    android:layout_width="55sp"
                     android:layout_height="wrap_content"
                     android:text="CAR"
                     android:id="@+id/textCAR"
